@@ -46,7 +46,9 @@ export function AnimatedText({ text, className = "", delay = 0 }: AnimatedTextPr
       "-=0.5",
     )
 
-    return () => tl.kill()
+    return () => {
+      tl.kill()
+    }
   }, [text, delay])
 
   return <div ref={textRef} className={className} />

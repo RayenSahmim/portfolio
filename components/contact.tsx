@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Mail, MapPin, Phone, Send, MessageCircle } from "lucide-react"
 import { MetallicTitle } from "./metallic-title"
 import personalData from "@/data/personal.json"
+import { toast } from "sonner"
 
 export function Contact() {
   const [formData, setFormData] = useState({
@@ -18,11 +19,50 @@ export function Contact() {
     message: "",
   })
 
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
   const currentYear = new Date().getFullYear()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log("Form submitted:", formData)
+    
+    if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
+      toast.error("Please fill in all fields")
+      return
+    }
+
+    setIsSubmitting(true)
+
+    try {
+      const response = await fetch('/api/Messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: formData.name,
+          email: formData.email,
+          message: formData.message,
+        }),
+      })
+
+      if (response.ok) {
+        toast.success("Message sent successfully! I'll get back to you soon.")
+        setFormData({
+          name: "",
+          email: "",
+          message: "",
+        })
+      } else {
+        const errorData = await response.json()
+        toast.error(errorData.error || "Failed to send message. Please try again.")
+      }
+    } catch (error) {
+      console.error("Error sending message:", error)
+      toast.error("Failed to send message. Please check your connection and try again.")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -140,9 +180,13 @@ export function Contact() {
                   />
                 </div>
 
-                <Button type="submit" className="w-full professional-button-primary group">
-                  <Send className="h-5 w-5 mr-2 group-hover:-translate-y-1 transition-transform" />
-                  SEND MESSAGE
+                <Button 
+                  type="submit" 
+                  className="w-full professional-button-primary group"
+                  disabled={isSubmitting}
+                >
+                  <Send className={`h-5 w-5 mr-2 transition-transform ${isSubmitting ? 'animate-pulse' : 'group-hover:-translate-y-1'}`} />
+                  {isSubmitting ? 'SENDING...' : 'SEND MESSAGE'}
                 </Button>
               </form>
             </CardContent>
