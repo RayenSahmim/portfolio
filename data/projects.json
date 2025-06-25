@@ -6,7 +6,7 @@
       "title": "ARAB UNION PLATFORM",
       "description": "Full-stack web platform for the Arab Union of Small Enterprises featuring real-time messaging, virtual meeting management, personalized recommendation system, and intelligent RAG-architecture chatbot with Supabase database.",
       "image": "/placeholder.svg?height=300&width=400",
-      "technologies": ["Next.js", "React", "Node.js", "Supabase", "Socket.IO", "GetStream", "RAG", "Figma"],
+      "technologies": ["Next.js", "Node.js", "Supabase", "Socket.IO", "GetStream", "RAG", "LangChain", "Figma"],
       "github": "https://github.com/RayenSahmim",
       "live": "https://pfefrontend-baga.onrender.com",
       "featured": true
@@ -16,7 +16,7 @@
       "title": "WORKER MANAGEMENT PLATFORM",
       "description": "Comprehensive employee management system with real-time chat, interactive analytics dashboard, performance tracking, and real-time screen sharing for activity monitoring using Supabase database.",
       "image": "/placeholder.svg?height=300&width=400",
-      "technologies": ["Next.js", "React", "Node.js", "Supabase", "Socket.IO", "GetStream", "WebRTC", "Analytics"],
+      "technologies": ["Next.js",   "Supabase",  "GetStream", "RAG"  , "Figma" ],
       "github": "https://github.com/RayenSahmim",
       "live": "https://mega-tel.de/en",
       "featured": true
@@ -47,6 +47,16 @@
       "description": "Complete UI/UX redesign of CMR Marktforschung Mannheim website, implementing modern responsive design with Next.js for improved navigation and user experience.",
       "image": "/placeholder.svg?height=300&width=400",
       "technologies": ["Next.js", "React", "Tailwind CSS", "Figma", "UI/UX"],
+      "github": "https://github.com/RayenSahmim",
+      "live": "#",
+      "featured": false
+    },
+    {
+      "order": 6,
+      "title": "AI CHATBOT",
+      "description": "Intelligent conversational AI chatbot built with advanced natural language processing capabilities, featuring context-aware responses, conversation memory, and seamless integration with Gemini API for enhanced user interactions.",
+      "image": "/placeholder.svg?height=300&width=400",
+      "technologies": ["Next.js", "Node.js", "MongoDB", "Gemini API", "LangChain", "Shadcn UI", "Tailwind CSS"],
       "github": "https://github.com/RayenSahmim",
       "live": "#",
       "featured": false

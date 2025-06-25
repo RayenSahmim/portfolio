@@ -33,7 +33,10 @@ export function Projects() {
       WebRTC: SimpleIcons.SiWebrtc,
       "Tailwind CSS": SimpleIcons.SiTailwindcss,
       Figma: SimpleIcons.SiFigma,
-      RAG: SimpleIcons.SiOpenai,
+      RAG: SimpleIcons.SiGooglegemini,
+      "Gemini API": SimpleIcons.SiGooglegemini,
+      LangChain: SimpleIcons.SiLangchain,
+      "Shadcn UI": SimpleIcons.SiShadcnui,
       Analytics: SimpleIcons.SiGoogleanalytics,
       "UI/UX": SimpleIcons.SiAdobe,
     }
@@ -55,7 +58,10 @@ export function Projects() {
       WebRTC: "#FF6B6B",
       "Tailwind CSS": "#06B6D4",
       Figma: "#F24E1E",
-      RAG: "#10A37F",
+      RAG: "#4285F4",
+      "Gemini API": "#4285F4",
+      LangChain: "#1C7A1C",
+      "Shadcn UI": "#000000",
       Analytics: "#E37400",
       "UI/UX": "#FF0000",
     }
@@ -65,7 +71,7 @@ export function Projects() {
 
   // Check if icon needs white color (for dark icons)
   const needsWhiteColor = (techName: string) => {
-    const darkIcons = ["Next.js", "Socket.IO", "Express"]
+    const darkIcons = ["Next.js", "Socket.IO", "Express", "Shadcn UI"]
     return darkIcons.includes(techName)
   }
 
@@ -357,11 +363,22 @@ export function Projects() {
                 </div>
 
                 <div className="flex space-x-4 pt-4">
-                  <Button variant="outline" size="sm" className="professional-button-small group/btn">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="professional-button-small group/btn"
+                    onClick={() => window.open(project.github, '_blank')}
+                  >
                     <Github className="h-4 w-4 mr-2 group-hover/btn:rotate-12 transition-transform" />
                     Code
                   </Button>
-                  <Button variant="outline" size="sm" className="professional-button-small group/btn">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="professional-button-small group/btn"
+                    onClick={() => window.open(project.live, '_blank')}
+                    disabled={project.live === '#'}
+                  >
                     <ExternalLink className="h-4 w-4 mr-2 group-hover/btn:scale-110 transition-transform" />
                     Live Demo
                   </Button>

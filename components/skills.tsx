@@ -6,7 +6,7 @@ import * as SimpleIcons from "react-icons/si"
 export function Skills() {
   const getIcon = (iconName: string) => {
     const IconComponent = (SimpleIcons as any)[iconName]
-    return IconComponent || SimpleIcons.SiCode
+    return IconComponent || SimpleIcons.SiCoder
   }
 
   const getIconColor = (skill: any) => {
