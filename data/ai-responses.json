@@ -1,0 +1,21 @@
+{
+  "title": "ASK MY AI ASSISTANT",
+  "description": "Have questions about my experience, skills, or projects? My AI assistant is here to help!",
+  "initialMessage": "Hi! I'm Rayen's AI assistant. Ask me anything about his experience, skills, or projects!",
+  "placeholder": "Ask me anything about Rayen...",
+  "quickQuestions": [
+    "What's Rayen's experience?",
+    "Tell me about his skills",
+    "Show me his projects",
+    "How can I contact him?"
+  ],
+  "responses": {
+    "experience": "Rayen has experience as a Full Stack Developer with projects at Teptac Services and Mega Tel Hi Tech. He has worked on complex web platforms including real-time messaging systems, virtual meeting management, analytics dashboards, and AI-powered chatbots. His experience spans from February 2024 to June 2025 with various challenging projects.",
+    "skills": "Rayen's core skills include: Frontend (React.js, Next.js, JavaScript, Tailwind CSS, HTML/CSS), Backend (Node.js, Express.js, MongoDB, PostgreSQL, Python, Flask), and Technologies (Socket.IO, WebRTC, Docker, Git, Figma, Stripe, Supabase). He specializes in MERN stack development and real-time applications.",
+    "projects": "Rayen's notable projects include: Arab Union Platform (full-stack platform with RAG chatbot), Worker Management Platform (real-time analytics and monitoring), Advanced Messaging App (WebRTC video calls), Hotel Reservation System (booking management), and CMR Website Redesign (UI/UX modernization).",
+    "contact": "You can reach Rayen at rayensahmim@gmail.com or (+216) 28590727. He's based in Ben Arous, Tunisia. You can also connect with him on LinkedIn: https://www.linkedin.com/in/rayen-sahmim-439768172/ or check his GitHub: https://github.com/RayenSahmim",
+    "education": "Rayen holds a Bachelor's degree in Mathematics (2022) with Good mention and a License in Software Engineering (2022-2025) with Very Good mention from Institut Supérieur d'Informatique de Mahdia (ISIMA). He's currently deepening his knowledge in DevOps and Artificial Intelligence.",
+    "languages": "Rayen is multilingual: Arabic (native), French (fluent), and English (fluent). This allows him to work effectively in international environments and communicate with diverse teams.",
+    "default": "That's a great question! Rayen is a passionate full-stack developer from Tunisia who loves creating innovative digital solutions. Feel free to ask about his experience, skills, projects, education, or how to get in touch with him."
+  }
+}

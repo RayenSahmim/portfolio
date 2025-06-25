@@ -1,0 +1,59 @@
+{
+  "name": "RAYEN SAHMIM",
+  "title": "FULL STACK DEVELOPER",
+  "description": "Computer Science graduate passionate about problem-solving and developing innovative digital solutions. Specialized in MERN stack technologies and modern web development with a focus on real-time applications and user experience.",
+  "highlights": ["innovative", "modern", "scalable"],
+  "about": {
+    "intro": "I'm a passionate full-stack developer with a Computer Science degree, specializing in creating innovative digital solutions. I have solid expertise in MERN stack technologies (MongoDB, Express, React, Node.js) and Next.js, enabling me to develop modern and high-performance web applications.",
+    "secondary": "Currently deepening my knowledge in DevOps and Artificial Intelligence as part of continuous improvement and adaptation to new technologies. I'm seeking opportunities to apply my knowledge in a stimulating professional environment and actively contribute to the success of ambitious projects.",
+    "stats": [
+      { "number": "5+", "label": "Projects" },
+      { "number": "1+", "label": "Years Experience" },
+      { "number": "3", "label": "Languages" }
+    ],
+    "values": [
+      {
+        "title": "Problem Solving",
+        "description": "Passionate about analyzing complex problems and developing innovative digital solutions.",
+        "icon": "Code"
+      },
+      {
+        "title": "Modern Technologies",
+        "description": "Expertise in MERN stack, Next.js, and real-time technologies for interactive applications.",
+        "icon": "Palette"
+      },
+      {
+        "title": "Continuous Learning",
+        "description": "Currently expanding knowledge in DevOps and AI to stay current with emerging technologies.",
+        "icon": "Rocket"
+      }
+    ]
+  },
+  "contact": {
+    "email": "rayensahmim@gmail.com",
+    "phone": "(+216) 28590727",
+    "location": "Ben Arous, Tunisia",
+    "description": "Ready to bring your next project to life? Let's create something extraordinary together.",
+    "connectMessage": "I'm always excited to discuss new opportunities, innovative ideas, and potential collaborations that push the boundaries of technology."
+  },
+  "socialLinks": [
+    {
+      "name": "GitHub",
+      "icon": "Github",
+      "url": "https://github.com/RayenSahmim"
+    },
+    {
+      "name": "LinkedIn",
+      "icon": "Linkedin",
+      "url": "https://www.linkedin.com/in/rayen-sahmim-439768172/"
+    },
+    {
+      "name": "Email",
+      "icon": "Mail",
+      "url": "mailto:rayensahmim@gmail.com"
+    }
+  ],
+  "footer": {
+    "copyright": "Crafted with passion using Next.js & Tailwind CSS."
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "brand": "RAYEN SAHMIM",
+  "navItems": [
+    { "href": "#home", "label": "Home" },
+    { "href": "#about", "label": "About" },
+    { "href": "#skills", "label": "Skills" },
+    { "href": "#projects", "label": "Projects" },
+    { "href": "#ai-assistant", "label": "AI Assistant" },
+    { "href": "#contact", "label": "Contact" }
+  ],
+  "socialLinks": [
+    { "name": "GitHub", "icon": "Github", "url": "https://github.com/RayenSahmim" },
+    { "name": "LinkedIn", "icon": "Linkedin", "url": "https://www.linkedin.com/in/rayen-sahmim-439768172/" },
+    { "name": "Email", "icon": "Mail", "url": "mailto:rayensahmim@gmail.com" }
+  ],
+  "buttons": [
+    { "text": "Download CV", "icon": "Download", "type": "primary" },
+    { "text": "View Projects", "type": "outline" }
+  ]
+}

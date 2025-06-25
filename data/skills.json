@@ -1,0 +1,32 @@
+{
+  "title": "SKILLS & TECHNOLOGIES",
+  "categories": [
+    {
+      "title": "FRONTEND",
+      "skills": [
+        { "name": "React.js", "level": 90, "icon": "SiReact", "color": "#61DAFB" },
+        { "name": "Next.js", "level": 88, "icon": "SiNextdotjs", "color": "#000000" },
+        { "name": "JavaScript", "level": 85, "icon": "SiJavascript", "color": "#F7DF1E" },
+        { "name": "Tailwind CSS", "level": 92, "icon": "SiTailwindcss", "color": "#06B6D4" }
+      ]
+    },
+    {
+      "title": "BACKEND",
+      "skills": [
+        { "name": "Node.js", "level": 88, "icon": "SiNodedotjs", "color": "#339933" },
+        { "name": "Express.js", "level": 85, "icon": "SiExpress", "color": "#000000" },
+        { "name": "Supabase", "level": 80, "icon": "SiSupabase", "color": "#3ECF8E" },
+        { "name": "Python", "level": 75, "icon": "SiPython", "color": "#3776AB" }
+      ]
+    },
+    {
+      "title": "TOOLS & CLOUD",
+      "skills": [
+        { "name": "Git/GitHub", "level": 90, "icon": "SiGithub", "color": "#181717" },
+        { "name": "Socket.IO", "level": 85, "icon": "SiSocketdotio", "color": "#010101" },
+        { "name": "Docker", "level": 70, "icon": "SiDocker", "color": "#2496ED" },
+        { "name": "Figma", "level": 85, "icon": "SiFigma", "color": "#F24E1E" }
+      ]
+    }
+  ]
+}
