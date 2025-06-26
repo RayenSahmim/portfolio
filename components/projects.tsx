@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef, useMemo } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ExternalLink, Github, Star, ChevronDown, ChevronUp, ArrowUpDown } from "lucide-react"
 import Image from "next/image"
@@ -298,7 +298,7 @@ export function Projects() {
           {sortedProjects.slice(0, visibleCount).map((project, index) => (
             <Card
               key={`${project.title}-${project.order}-${sortBy}`}
-              className={`project-card professional-card-hover group overflow-hidden transition-all duration-300 ${
+              className={`project-card professional-card-hover group overflow-hidden transition-all duration-300 flex flex-col h-full ${
                 project.featured ? "ring-2 ring-indigo-500/30" : ""
               }`}
             >
@@ -326,7 +326,7 @@ export function Projects() {
                 <CardTitle className="text-white text-xl professional-subtitle">{project.title}</CardTitle>
               </CardHeader>
 
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 flex-grow">
                 <p className="text-gray-300 leading-relaxed">{project.description}</p>
 
                 {/* Technology Icons */}
@@ -361,7 +361,9 @@ export function Projects() {
                     )
                   })}
                 </div>
-
+                 
+              </CardContent>
+               <CardFooter className="mt-auto">
                 <div className="flex space-x-4 pt-4">
                   <Button 
                     variant="outline" 
@@ -383,7 +385,7 @@ export function Projects() {
                     Live Demo
                   </Button>
                 </div>
-              </CardContent>
+                </CardFooter>
             </Card>
           ))}
         </div>
