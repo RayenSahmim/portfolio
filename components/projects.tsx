@@ -12,6 +12,22 @@ import * as SimpleIcons from "react-icons/si"
 
 type SortOption = "order" | "featured" | "title"
 
+type Project = {
+  order: number
+  title: string
+  description: string
+  image: string
+  technologies: string[]
+  live: string
+  featured: boolean
+  // Either single repo or multiple repos
+  github?: string
+  repositories?: {
+    frontend?: string
+    backend?: string
+  }
+}
+
 export function Projects() {
   const [visibleCount, setVisibleCount] = useState(4)
   const [isAnimating, setIsAnimating] = useState(false)
@@ -364,16 +380,48 @@ export function Projects() {
                  
               </CardContent>
                <CardFooter className="mt-auto">
-                <div className="flex space-x-4 pt-4">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="professional-button-small group/btn"
-                    onClick={() => window.open(project.github, '_blank')}
-                  >
-                    <Github className="h-4 w-4 mr-2 group-hover/btn:rotate-12 transition-transform" />
-                    Code
-                  </Button>
+                <div className="flex space-x-2 pt-4 flex-wrap gap-2">
+                  {/* Handle single repository (like Next.js projects) */}
+                  {project.github && (
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="professional-button-small group/btn"
+                      onClick={() => window.open(project.github, '_blank')}
+                    >
+                      <Github className="h-4 w-4 mr-2 group-hover/btn:rotate-12 transition-transform" />
+                      Code
+                    </Button>
+                  )}
+                  
+                  {/* Handle multiple repositories (like MERN projects) */}
+                  {project.repositories && (
+                    <>
+                      {project.repositories.frontend && (
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="professional-button-small group/btn"
+                          onClick={() => window.open(project.repositories.frontend, '_blank')}
+                        >
+                          <Github className="h-4 w-4 mr-2 group-hover/btn:rotate-12 transition-transform" />
+                          Frontend
+                        </Button>
+                      )}
+                      {project.repositories.backend && (
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="professional-button-small group/btn"
+                          onClick={() => window.open(project.repositories.backend, '_blank')}
+                        >
+                          <Github className="h-4 w-4 mr-2 group-hover/btn:rotate-12 transition-transform" />
+                          Backend
+                        </Button>
+                      )}
+                    </>
+                  )}
+                  
                   <Button 
                     variant="outline" 
                     size="sm" 

@@ -5,7 +5,7 @@
       "order": 1,
       "title": "ARAB UNION PLATFORM",
       "description": "Full-stack web platform for the Arab Union of Small Enterprises featuring real-time messaging, virtual meeting management, personalized recommendation system, and intelligent RAG-architecture chatbot with Supabase database.",
-      "image": "/placeholder.svg?height=300&width=400",
+      "image": "/projects/Unionarabe.png",
       "technologies": ["Next.js", "Node.js", "Supabase", "Socket.IO", "GetStream", "RAG", "LangChain", "Figma"],
       "github": "https://github.com/RayenSahmim",
       "live": "https://pfefrontend-baga.onrender.com",
@@ -15,9 +15,9 @@
       "order": 2,
       "title": "WORKER MANAGEMENT PLATFORM",
       "description": "Comprehensive employee management system with real-time chat, interactive analytics dashboard, performance tracking, and real-time screen sharing for activity monitoring using Supabase database.",
-      "image": "/placeholder.svg?height=300&width=400",
+      "image": "/projects/megatel.png",
       "technologies": ["Next.js",   "Supabase",  "GetStream", "RAG"  , "Figma" ],
-      "github": "https://github.com/RayenSahmim",
+      "github": "https://github.com/MegaTelTeam/megatel",
       "live": "https://mega-tel.de/en",
       "featured": true
     },
@@ -25,9 +25,12 @@
       "order": 3,
       "title": "ADVANCED MESSAGING APP",
       "description": "Real-time communication application built from scratch with MERN stack, featuring WebRTC video calls, video sharing, private secure rooms, and responsive modern UI.",
-      "image": "/placeholder.svg?height=300&width=400",
+      "image": "/projects/chatapp.png",
       "technologies": ["React", "Node.js", "MongoDB", "Express", "Socket.IO", "WebRTC"],
-      "github": "https://github.com/RayenSahmim",
+      "repositories": {
+        "frontend": "https://github.com/RayenSahmim/frontend_chat_app",
+        "backend": "https://github.com/RayenSahmim/backend_chat_app"
+      },
       "live": "#",
       "featured": false
     },
@@ -35,9 +38,8 @@
       "order": 4,
       "title": "HOTEL RESERVATION SYSTEM",
       "description": "Web application for managing hotel and coffee table reservations efficiently, delivering seamless user experience with dynamic UI and reliable backend system.",
-      "image": "/placeholder.svg?height=300&width=400",
+      "image": "/projects/Hotel.png",
       "technologies": ["React", "Node.js", "MongoDB", "Express"],
-      "github": "https://github.com/RayenSahmim",
       "live": "https://booking-reactjs-nine.vercel.app",
       "featured": false
     },
@@ -47,7 +49,7 @@
       "description": "Complete UI/UX redesign of CMR Marktforschung Mannheim website, implementing modern responsive design with Next.js for improved navigation and user experience.",
       "image": "/placeholder.svg?height=300&width=400",
       "technologies": ["Next.js", "React", "Tailwind CSS", "Figma", "UI/UX"],
-      "github": "https://github.com/RayenSahmim",
+      "github": "https://github.com/MegaTelTeam/CMR",
       "live": "#",
       "featured": false
     },
@@ -55,10 +57,10 @@
       "order": 6,
       "title": "AI CHATBOT",
       "description": "Intelligent conversational AI chatbot built with advanced natural language processing capabilities, featuring context-aware responses, conversation memory, and seamless integration with Gemini API for enhanced user interactions.",
-      "image": "/placeholder.svg?height=300&width=400",
+      "image": "/projects/chatbot.png",
       "technologies": ["Next.js", "Node.js", "MongoDB", "Gemini API", "LangChain", "Shadcn UI", "Tailwind CSS"],
-      "github": "https://github.com/RayenSahmim",
-      "live": "#",
+      "github": "https://github.com/RayenSahmim/chatbot",
+      "live": "https://chatbot-rayensahmims-projects.vercel.app/Login",
       "featured": false
     }
   ]
