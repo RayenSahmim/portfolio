@@ -1,7 +1,8 @@
 "use server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import type { Content } from "@google/generative-ai";
-import { PORTFOLIO_ASSISTANT_PROMPT } from "@/lib/prompts";
+import { generateProjectPrompt, PORTFOLIO_ASSISTANT_PROMPT,  Project } from "@/lib/prompts";
+import { GenerateResponseStream } from "@/lib/utils";
 
 const generationConfig = {
   temperature: 0.7,
@@ -17,39 +18,34 @@ export const sendAIResponse = async (prompt: string, history: Content[]) => {
   }
 
   try {
-    const genAI = new GoogleGenerativeAI(apikey);
-    const model = genAI.getGenerativeModel({ 
-      model: "gemini-2.0-flash-exp",
-      systemInstruction: PORTFOLIO_ASSISTANT_PROMPT
-    });
-
-    const chat = model.startChat({
-      generationConfig,
+    const stream = await GenerateResponseStream({
+      prompt,
+      SystemPrompt: PORTFOLIO_ASSISTANT_PROMPT,
       history,
-    });
+      apikey,
+      generationConfig,
+    })
 
-    const result = await chat.sendMessageStream([prompt]);
-
-    // Create a ReadableStream for streaming the response
-    const stream = new ReadableStream({
-      async start(controller) {
-        try {
-          for await (const chunk of result.stream) {
-            const chunkText = chunk.text();
-            // Encode text as Uint8Array for proper streaming
-            const encoder = new TextEncoder();
-            controller.enqueue(encoder.encode(chunkText));
-          }
-          controller.close(); // Close the stream when finished
-        } catch (error) {
-          controller.error(error); // Handle errors in the stream
-        }
-      },
-    });
-
-    return stream; // Return the stream to the caller
+    return stream
   } catch (error) {
     console.error(error);
     throw new Error("Failed to fetch AI response.");
+  }
+};
+
+export const explainProject = async (project: Project , history: Content[] , userMessage: string) => {
+  try {
+    const SystemPrompt = generateProjectPrompt(project);
+    const stream = GenerateResponseStream({
+    prompt : userMessage,
+    SystemPrompt,
+    history,
+    apikey: process.env.GEMINI_API_KEY || '',
+    generationConfig
+  })
+  return stream
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to explain project.");
   }
 };

@@ -2,6 +2,7 @@ import { Hero } from "@/components/hero"
 import { About } from "@/components/about"
 import { Skills } from "@/components/skills"
 import { Projects } from "@/components/projects"
+import { Certificates } from "@/components/certificates"
 import { AIAssistant } from "@/components/ai-assistant"
 import { Contact } from "@/components/contact"
 import { Navigation } from "@/components/navigation"
@@ -18,6 +19,7 @@ export default function Portfolio() {
         <About />
         <Skills />
         <Projects />
+        <Certificates />
         <AIAssistant />
         <Contact />
       </main>

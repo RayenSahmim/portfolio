@@ -7,7 +7,8 @@
     "What's Rayen's experience?",
     "Tell me about his skills",
     "Show me his projects",
-    "How can I contact him?"
+    "How can I contact him?",
+    "What's Rayen's Certificates?"
   ],
   "responses": {
     "experience": "Rayen has experience as a Full Stack Developer with projects at Teptac Services and Mega Tel Hi Tech. He has worked on complex web platforms including real-time messaging systems, virtual meeting management, analytics dashboards, and AI-powered chatbots. His experience spans from February 2024 to June 2025 with various challenging projects.",

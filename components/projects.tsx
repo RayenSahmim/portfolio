@@ -9,6 +9,7 @@ import { MetallicTitle } from "./metallic-title"
 import projectsData from "@/data/projects.json"
 import { gsap } from "gsap"
 import * as SimpleIcons from "react-icons/si"
+import { ProjectCard } from "./ProjectCard"
 
 type SortOption = "order" | "featured" | "title"
 
@@ -312,129 +313,7 @@ export function Projects() {
 
         <div ref={projectsRef} className="grid md:grid-cols-2 gap-8 mb-12">
           {sortedProjects.slice(0, visibleCount).map((project, index) => (
-            <Card
-              key={`${project.title}-${project.order}-${sortBy}`}
-              className={`project-card professional-card-hover group overflow-hidden transition-all duration-300 flex flex-col h-full ${
-                project.featured ? "ring-2 ring-indigo-500/30" : ""
-              }`}
-            >
-              <div className="relative overflow-hidden">
-                {project.featured && (
-                  <div className="absolute top-4 right-4 z-10">
-                    <div className="flex items-center space-x-1 bg-gradient-to-r from-indigo-500 to-purple-500 px-3 py-1 rounded-full">
-                      <Star className="h-4 w-4 text-white" />
-                      <span className="text-white text-sm font-medium">FEATURED</span>
-                    </div>
-                  </div>
-                )}
-
-                <Image
-                  src={project.image || "/placeholder.svg"}
-                  alt={project.title}
-                  width={400}
-                  height={300}
-                  className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </div>
-
-              <CardHeader>
-                <CardTitle className="text-white text-xl professional-subtitle">{project.title}</CardTitle>
-              </CardHeader>
-
-              <CardContent className="space-y-4 flex-grow">
-                <p className="text-gray-300 leading-relaxed">{project.description}</p>
-
-                {/* Technology Icons */}
-                <div className="flex flex-wrap gap-3">
-                  {project.technologies.map((tech, techIndex) => {
-                    const IconComponent = getTechIcon(tech)
-                    const techColor = getTechColor(tech)
-                    const iconColor = needsWhiteColor(tech) ? "#ffffff" : techColor
-
-                    return (
-                      <div
-                        key={techIndex}
-                        className="group/tech relative flex items-center space-x-2 px-3 py-2 rounded-lg border transition-all duration-300 hover:scale-105"
-                        style={{
-                          backgroundColor: `${techColor}15`,
-                          borderColor: `${techColor}30`,
-                        }}
-                      >
-                        <IconComponent
-                          className="w-4 h-4 transition-all duration-300 group-hover/tech:scale-110"
-                          color={iconColor}
-                        />
-                        <span className="text-xs font-medium text-gray-300 group-hover/tech:text-white transition-colors">
-                          {tech}
-                        </span>
-
-                        {/* Tooltip */}
-                        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-2 py-1 rounded text-xs opacity-0 group-hover/tech:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap z-10">
-                          {tech}
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-                 
-              </CardContent>
-               <CardFooter className="mt-auto">
-                <div className="flex space-x-2 pt-4 flex-wrap gap-2">
-                  {/* Handle single repository (like Next.js projects) */}
-                  {project.github && (
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="professional-button-small group/btn"
-                      onClick={() => window.open(project.github, '_blank')}
-                    >
-                      <Github className="h-4 w-4 mr-2 group-hover/btn:rotate-12 transition-transform" />
-                      Code
-                    </Button>
-                  )}
-                  
-                  {/* Handle multiple repositories (like MERN projects) */}
-                  {project.repositories && (
-                    <>
-                      {project.repositories.frontend && (
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          className="professional-button-small group/btn"
-                          onClick={() => window.open(project.repositories.frontend, '_blank')}
-                        >
-                          <Github className="h-4 w-4 mr-2 group-hover/btn:rotate-12 transition-transform" />
-                          Frontend
-                        </Button>
-                      )}
-                      {project.repositories.backend && (
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          className="professional-button-small group/btn"
-                          onClick={() => window.open(project.repositories.backend, '_blank')}
-                        >
-                          <Github className="h-4 w-4 mr-2 group-hover/btn:rotate-12 transition-transform" />
-                          Backend
-                        </Button>
-                      )}
-                    </>
-                  )}
-                  
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="professional-button-small group/btn"
-                    onClick={() => window.open(project.live, '_blank')}
-                    disabled={project.live === '#'}
-                  >
-                    <ExternalLink className="h-4 w-4 mr-2 group-hover/btn:scale-110 transition-transform" />
-                    Live Demo
-                  </Button>
-                </div>
-                </CardFooter>
-            </Card>
+            <ProjectCard key={index} project={project} sortBy={sortBy} />
           ))}
         </div>
 

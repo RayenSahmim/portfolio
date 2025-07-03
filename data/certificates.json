@@ -1,0 +1,24 @@
+{
+  "certificates": [
+    {
+      "id": 1,
+      "title": "Introduction to Generative AI",
+      "issuer": "Google Cloud (via Coursera)",
+      "date": "January 28, 2024",
+      "description": "Comprehensive course covering the fundamentals of generative AI, including how it works, different model types, and practical applications. Completed with verified certification.",
+      "skills": [
+        "Generative AI",
+        "Google Cloud Platform",
+        "Machine Learning Methods",
+        "Artificial Intelligence",
+        "Application Development"
+      ],
+      "credentialId": "UWWN2F7PYWK3",
+      "verificationUrl": "https://www.coursera.org/account/accomplishments/verify/UWWN2F7PYWK3",
+      "image": "/certificates/generative-ai-cert.jpg",
+      "duration": "1 hour",
+      "rating": "4.7/5 (7,845 evaluations)",
+      "completedBy": "Rayen Sahmim"
+    }
+  ]
+}
