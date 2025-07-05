@@ -19,6 +19,48 @@
       "duration": "1 hour",
       "rating": "4.7/5 (7,845 evaluations)",
       "completedBy": "Rayen Sahmim"
+    },
+    {
+      "id": 2,
+      "title": "Introduction to Python for Developers",
+      "issuer": "DataCamp",
+      "date": "July 4, 2025",
+      "description": "Comprehensive Python programming course for beginners covering fundamental concepts from basic syntax to advanced data structures. Completed hands-on exercises with variables, data types, control structures, and loops.",
+      "skills": [
+        "Python Programming",
+        "Data Structures",
+        "Control Flow",
+        "Variables and Data Types",
+        "Loops and Conditionals"
+      ],
+      "credentialId": "c787d5db6bb9733bd5c0ce75ca93c13e94651c00",
+      "verificationUrl": "https://www.datacamp.com/completed/statement-of-accomplishment/course/c787d5db6bb9733bd5c0ce75ca93c13e94651c00",
+      "image": "/certificates/datacamp-cert-1.jpg",
+      "duration": "3 hours",
+      "rating": "DataCamp Verified",
+      "completedBy": "Rayen Sahmim"
+    },
+    {
+      "id": 3,
+      "title": "Understanding Artificial Intelligence",
+      "issuer": "DataCamp",
+      "date": "July 5, 2025",
+      "description": "Comprehensive non-technical course exploring fundamental AI concepts and applications. Covered machine learning, deep learning, natural language processing, generative models, and AI implementation in organizations with hands-on activities.",
+      "skills": [
+        "Artificial Intelligence",
+        "Machine Learning",
+        "Deep Learning",
+        "Natural Language Processing",
+        "AI Strategy",
+        "Responsible AI"
+      ],
+
+      "credentialId": "20be3a8b6fde6217018da97de93eee80c40e997c",
+      "verificationUrl": "https://www.datacamp.com/completed/statement-of-accomplishment/course/20be3a8b6fde6217018da97de93eee80c40e997c",
+      "image": "/certificates/datacamp-cert-2.jpg",
+      "duration": "2 hours",
+      "rating": "DataCamp Verified",
+      "completedBy": "Rayen Sahmim"
     }
   ]
 }
