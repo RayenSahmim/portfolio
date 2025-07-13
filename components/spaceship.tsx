@@ -66,8 +66,8 @@ function SpaceBackgroundEffects() {
 
   return (
     <>
-      {/* Fixed Background with theme support */}
-      <div className="fixed inset-0 bg-background"></div>
+      {/* Fixed Background matching portfolio exactly */}
+      <div className="fixed inset-0 bg-gray-900"></div>
 
       {/* Animated Stars */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">

@@ -46,7 +46,7 @@ export function SpaceExplorer() {
     <>
       <style  />
       {/* Space Exploration Trigger Section */}
-      <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 via-purple-900 to-black overflow-hidden">
+      <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 via-indigo-900 to-black overflow-hidden">
         {/* Animated stars background */}
         <div className="absolute inset-0 overflow-hidden">
           {[...Array(100)].map((_, i) => (
@@ -72,7 +72,7 @@ export function SpaceExplorer() {
 
         {/* Main content */}
         <div className="relative z-10 text-center text-white px-8">
-          <h2 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent animate-fade-in">
+          <h2 className="text-5xl md:text-7xl font-bold mb-6 animated-text-gradient">
             Ready for an Adventure?
           </h2>
           
@@ -126,7 +126,7 @@ export function SpaceExplorer() {
           </button>
 
           {/* ESC hint */}
-          <div className="absolute top-6 left-6 z-60 bg-black/50 text-white p-3 rounded-lg backdrop-blur-sm border border-gray-600/30 animate-slide-right">
+          <div className="absolute top-6 left-1/2   z-60 bg-black/50 text-white p-3 rounded-lg backdrop-blur-sm border border-gray-600/30 animate-slide-right">
             <div className="text-sm">Press <kbd className="bg-gray-700 px-2 py-1 rounded text-xs">ESC</kbd> to exit</div>
           </div>
 
