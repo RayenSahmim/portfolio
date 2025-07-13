@@ -3,9 +3,11 @@
 import { useState, useEffect } from "react"
 import { ChevronUp } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useSpaceExplorer } from "@/contexts/space-explorer-context"
 
 export function ScrollToTop() {
   const [isVisible, setIsVisible] = useState(false)
+  const { isExploring } = useSpaceExplorer()
 
   // Show button when page is scrolled down
   const toggleVisibility = () => {
@@ -33,7 +35,7 @@ export function ScrollToTop() {
 
   return (
     <>
-      {isVisible && (
+      {isVisible && !isExploring && (
         <div className="fixed bottom-8 right-8 z-50">
           <Button
             onClick={scrollToTop}

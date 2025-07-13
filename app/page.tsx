@@ -8,6 +8,7 @@ import { Contact } from "@/components/contact"
 import { Navigation } from "@/components/navigation"
 import { BackgroundEffects } from "@/components/background-effects"
 import { ScrollToTop } from "@/components/scroll-to-top"
+import { SpaceExplorer } from "@/components/space-explorer"
 
 export default function Portfolio() {
   return (
@@ -22,6 +23,7 @@ export default function Portfolio() {
         <Certificates />
         <AIAssistant />
         <Contact />
+        <SpaceExplorer />
       </main>
       <ScrollToTop />
     </div>

@@ -3,11 +3,13 @@
 import { useState, useEffect } from "react"
 import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useSpaceExplorer } from "@/contexts/space-explorer-context"
 import navigationData from "@/data/navigation.json"
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const { isExploring } = useSpaceExplorer()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,6 +18,11 @@ export function Navigation() {
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
+
+  // Hide navigation when space exploring
+  if (isExploring) {
+    return null
+  }
 
   return (
     <nav
