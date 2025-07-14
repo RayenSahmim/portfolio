@@ -161,7 +161,7 @@ export function SpaceExplorer() {
           {/* Exit button */}
           <button
             onClick={handleExitSpace}
-            className="absolute top-6 right-6 z-60 bg-red-600/80 hover:bg-red-600 text-white p-3 rounded-full backdrop-blur-sm border border-red-400/30 transition-all duration-300 animate-slide-down"
+            className="absolute top-4 right-4 z-60 bg-red-600/80 hover:bg-red-600 text-white p-3 rounded-full backdrop-blur-sm border border-red-400/30 transition-all duration-300 animate-slide-down"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -182,7 +182,7 @@ export function SpaceExplorer() {
           )}
 
           {/* ESC hint */}
-          <div className="absolute top-6 left-1/2 transform -translate-x-1/2 z-60 bg-black/50 text-white p-3 rounded-lg backdrop-blur-sm border border-gray-600/30 animate-slide-down">
+          <div className="hidden md:block absolute top-6 left-1/2 transform -translate-x-1/2 z-60 bg-black/50 text-white p-3 rounded-lg backdrop-blur-sm border border-gray-600/30 animate-slide-down">
             <div className="text-sm">Press <kbd className="bg-gray-700 px-2 py-1 rounded text-xs">ESC</kbd> to exit</div>
           </div>
 
