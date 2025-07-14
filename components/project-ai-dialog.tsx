@@ -8,7 +8,6 @@ import { ChatMessages } from "@/components/ui/chat-messages"
 import { ChatInput } from "@/components/ui/chat-input"
 import { explainProject } from "@/app/actions/Ai.action"
 import type { Content } from "@google/generative-ai"
-import { cn } from "@/lib/utils"
 
 type Project = {
   order: number

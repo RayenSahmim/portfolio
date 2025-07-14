@@ -6,6 +6,8 @@ import { useMemo, useRef, useState, useEffect } from "react"
 import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import { useGLTF, KeyboardControls, useKeyboardControls, Environment, Stars } from "@react-three/drei"
 import * as THREE from "three"
+import { usePlayers } from "@/hooks/use-players"
+import { MultiplayerPlayers } from "./multiplayer-players"
 
 /* --------------------------- PORTFOLIO BACKGROUND EFFECTS --------------------------- */
 // Generate deterministic star positions based on index
@@ -210,7 +212,7 @@ function TrailLine({ spaceshipRef }: { spaceshipRef: React.RefObject<THREE.Group
 }
 
 /* ----------------------------- SPACESHIP MESH ----------------------------- */
-function Spaceship() {
+function Spaceship({ updatePlayerPosition }: { updatePlayerPosition?: (position: THREE.Vector3, rotation: THREE.Euler, velocity: THREE.Vector3, isMovingForward: boolean) => void }) {
   const { scene } = useGLTF("/models/spaceship.glb")
   const shipRef = useRef<THREE.Group>(null)
   const [, getKeys] = useKeyboardControls()
@@ -251,11 +253,11 @@ function Spaceship() {
 
     if (isForward) {
       vel.current.addScaledVector(dir, thrust * dt)
-      flame.current = Math.min(flame.current + dt * 5, 1)
+      flame.current = Math.min(flame.current + dt * 3, 1) // Even smoother buildup
       // Track forward movement for trail
       shipRef.current.userData.isMovingForward = true
     } else {
-      flame.current = Math.max(flame.current - dt * 3, 0)
+      flame.current = Math.max(flame.current - dt * 1.5, 0) // Much slower fade
       shipRef.current.userData.isMovingForward = false
     }
 
@@ -265,7 +267,7 @@ function Spaceship() {
     vel.current.multiplyScalar(0.98) // increased damping to slow down faster
     
     /* limit maximum speed */
-    const maxSpeed = 8
+    const maxSpeed = 2
     if (vel.current.length() > maxSpeed) {
       vel.current.normalize().multiplyScalar(maxSpeed)
     }
@@ -286,43 +288,54 @@ function Spaceship() {
     /* animate flames */
     fireRefs.current.forEach((f, i) => {
       if (!f) return
-      const scale = flame.current * (0.9 + Math.sin(_.clock.elapsedTime * 10 + i) * 0.2)
-      f.visible = scale > 0.05
-      f.scale.setScalar(scale)
+      
+      // Clean on/off behavior - no flickering when stopped
+      if (flame.current < 0.15) {
+        // Completely hide flames when not thrusting
+        f.visible = false
+        f.scale.setScalar(0)
+      } else {
+        // Show flames with gentle animation when thrusting
+        f.visible = true
+        const oscillation = Math.sin(_.clock.elapsedTime * 4 + i * 0.8) * 0.1
+        const scale = flame.current * (0.9 + oscillation)
+        f.scale.setScalar(scale)
+      }
     })
-  })
 
-  /* Helper sub-component for each engine flame */
-  const EngineFire = ({ pos, idx }: { pos: [number, number, number]; idx: number }) => {
-    const ref = useRef<THREE.Group>(null)
-    /* register ref */
-    useFrame(() => {
-      if (ref.current) fireRefs.current[idx] = ref.current
-    })
-    return (
-      <group ref={ref} position={pos}>
-        <mesh rotation={[Math.PI / 2, 0, 0]}>
-          <coneGeometry args={[0.3, 2, 8]} />
-          <meshBasicMaterial color="#0088ff" transparent opacity={0.8} />
-        </mesh>
-        <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.25]}>
-          <coneGeometry args={[0.15, 1.5, 6]} />
-          <meshBasicMaterial color="#00aaff" transparent opacity={0.9} />
-        </mesh>
-        <pointLight color="#0099ff" intensity={1} distance={8} />
-      </group>
-    )
-  }
+    // Send position updates to multiplayer system
+    if (updatePlayerPosition) {
+      updatePlayerPosition(
+        shipRef.current.position.clone(),
+        shipRef.current.rotation.clone(),
+        vel.current.clone(),
+        shipRef.current.userData.isMovingForward
+      );
+    }
+  })
 
   return (
     <>
       <group ref={shipRef} name="spaceship">
         <primitive object={scene} scale={0.5} />
         {/* 4 flames positioned to match the blue engine dots */}
-        <EngineFire pos={[-0.6, 0.5, 2.2]} idx={0} />
-        <EngineFire pos={[-0.3, 0.5, 2.2]} idx={1} />
-        <EngineFire pos={[0.3, 0.5, 2.2]} idx={2} />
-        <EngineFire pos={[0.6, 0.5, 2.2]} idx={3} />
+        {[...Array(4)].map((_, i) => (
+          <group
+            key={i}
+            ref={(el) => (fireRefs.current[i] = el!)}
+            position={[-0.6 + i * 0.3, 0.5, 2.2]}
+          >
+            <mesh rotation={[Math.PI / 2, 0, 0]}>
+              <coneGeometry args={[0.3, 2, 8]} />
+              <meshBasicMaterial color="#0088ff" transparent opacity={0.7} />
+            </mesh>
+            <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.25]}>
+              <coneGeometry args={[0.15, 1.5, 6]} />
+              <meshBasicMaterial color="#00aaff" transparent opacity={0.8} />
+            </mesh>
+            <pointLight color="#0099ff" intensity={0.8} distance={8} />
+          </group>
+        ))}
         {/* trail line after 2 seconds of forward movement */}
         <TrailLine spaceshipRef={shipRef} />
       </group>
@@ -491,15 +504,20 @@ function TouchControls({ onExit }: { onExit?: () => void }) {
 }
 
 /* --------------------------- HUD / INSTRUCTIONS --------------------------- */
-function Instructions({ onExit }: { onExit?: () => void }) {
+function Instructions({ onExit, playerCount }: { onExit?: () => void; playerCount?: number }) {
   return (
     <>
       <div className="absolute top-4 left-4 bg-black/70 text-white p-4 rounded font-mono text-sm">
-        <h3 className="font-bold mb-2">Controls</h3>
+        <h3 className="font-bold mb-2">🚀 SPACE EXPLORER</h3>
         <p className="hidden md:block">↑ ↓ ← → or W A S D – fly</p>
         <p className="md:hidden">Use touch controls to fly</p>
         <p className="text-orange-400">Thrust shows engine flames</p>
         <p className="text-cyan-400">Speed lines appear when going fast</p>
+        {playerCount !== undefined && (
+          <p className="text-green-400 mt-2">
+            👥 Players online: {playerCount + 1} {/* +1 for current player */}
+          </p>
+        )}
         {onExit && (
           <p className="text-red-400 mt-2 hidden md:block">ESC – return to portfolio</p>
         )}
@@ -509,6 +527,9 @@ function Instructions({ onExit }: { onExit?: () => void }) {
         <div className="absolute bottom-4 left-4 bg-black/70 text-white p-3 rounded font-mono text-sm">
           <p className="text-yellow-400">🚀 Space Explorer Mode</p>
           <p className="text-gray-300 text-xs mt-1">Enjoying the ride? Press ESC when ready to return</p>
+          {playerCount !== undefined && playerCount > 0 && (
+            <p className="text-green-300 text-xs mt-1">You're flying with {playerCount} other explorer{playerCount === 1 ? '' : 's'}!</p>
+          )}
         </div>
       )}
     </>
@@ -516,11 +537,48 @@ function Instructions({ onExit }: { onExit?: () => void }) {
 }
 
 /* --------------------------------- PAGE ---------------------------------- */
-export default function SpaceshipGame({ onExit }: { onExit?: () => void }) {
+interface PlayerData {
+  username: string
+  color: string
+}
+
+export default function SpaceshipGame({ 
+  onExit, 
+  playerData 
+}: { 
+  onExit?: () => void
+  playerData?: PlayerData | null 
+}) {
+  const { playersMap, updatePlayerPosition, connected, setIsInSpaceExplorer } = usePlayers();
+
+  // Set the space explorer state when the component mounts
+  useEffect(() => {
+    setIsInSpaceExplorer(true);
+    return () => {
+      setIsInSpaceExplorer(false);
+    };
+  }, []);
+
+  // Debug: Log players when they change
+  useEffect(() => {
+    console.log(`Players in space: ${playersMap.size}`, Array.from(playersMap.values()));
+  }, [playersMap.size]); // Only depend on size, not the entire playersMap
+
   return (
     <div className="h-screen w-full relative">
       {/* Portfolio Background Effects */}
       <SpaceBackgroundEffects />
+      
+      {/* Debug info */}
+      <div className="absolute top-4 right-4 bg-black/70 text-white p-2 rounded font-mono text-xs">
+        <p>Connection: {connected ? '🟢 Connected' : '🔴 Disconnected'}</p>
+        <p>Other Players: {playersMap.size}</p>
+        {Array.from(playersMap.values()).map(player => (
+          <p key={player.id} className="text-cyan-400">
+            Player: {playerData?.username}
+          </p>
+        ))}
+      </div>
       
       <KeyboardControls
         map={[
@@ -542,7 +600,10 @@ export default function SpaceshipGame({ onExit }: { onExit?: () => void }) {
           <Environment preset="night" />
 
           {/* main actor */}
-          <Spaceship />
+          <Spaceship updatePlayerPosition={updatePlayerPosition} />
+          
+          {/* other players */}
+          <MultiplayerPlayers playersMap={playersMap} />
 
           {/* auto-follow cam */}
           <FollowCamera />
@@ -552,7 +613,7 @@ export default function SpaceshipGame({ onExit }: { onExit?: () => void }) {
         </Canvas>
       </KeyboardControls>
 
-      <Instructions onExit={onExit} />
+      <Instructions onExit={onExit} playerCount={playersMap.size} />
       <TouchControls onExit={onExit} />
     </div>
   )

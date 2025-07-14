@@ -1,5 +1,4 @@
 "use server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import type { Content } from "@google/generative-ai";
 import { generateProjectPrompt, PORTFOLIO_ASSISTANT_PROMPT,  Project } from "@/lib/prompts";
 import { GenerateResponseStream } from "@/lib/utils";

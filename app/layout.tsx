@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { SpaceExplorerProvider } from "@/contexts/space-explorer-context";
 import { Navigation } from "@/components/navigation";
 import { ScrollToTop } from "@/components/scroll-to-top";
+import { SocketProvider } from "@/contexts/socket-context";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,12 +33,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        
         <SpaceExplorerProvider>
-          <Navigation />
-          {children}
-          <Toaster />
-          <ScrollToTop />
+          <SocketProvider>
+            <Navigation />
+            {children}
+            <Toaster />
+            <ScrollToTop />
+          </SocketProvider>
         </SpaceExplorerProvider>
       </body>
     </html>
