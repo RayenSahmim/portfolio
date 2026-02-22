@@ -7,7 +7,7 @@ import { Bot, Sparkles } from "lucide-react"
 import { ChatMessages } from "@/components/ui/chat-messages"
 import { ChatInput } from "@/components/ui/chat-input"
 import { explainProject } from "@/app/actions/Ai.action"
-import type { Content } from "@google/generative-ai"
+import type { ChatMessage } from "@/lib/utils"
 
 type Project = {
   order: number
@@ -41,7 +41,7 @@ export function ProjectAIDialog({ project, children }: ProjectAIDialogProps) {
   const [messages, setMessages] = useState<Message[]>([])
   const [inputValue, setInputValue] = useState("")
   const [isTyping, setIsTyping] = useState(false)
-  const [conversationHistory, setConversationHistory] = useState<Content[]>([])
+  const [conversationHistory, setConversationHistory] = useState<ChatMessage[]>([])
   const [isOpen, setIsOpen] = useState(false)
   const chatContainerRef = useRef<HTMLDivElement>(null)
 
@@ -105,9 +105,9 @@ export function ProjectAIDialog({ project, children }: ProjectAIDialogProps) {
 
     try {
       // Add user message to conversation history
-      const userContent: Content = {
+      const userContent: ChatMessage = {
         role: "user",
-        parts: [{ text: currentInput }]
+        content: currentInput,
       }
 
       // Get AI response stream
@@ -150,9 +150,9 @@ export function ProjectAIDialog({ project, children }: ProjectAIDialogProps) {
       }
 
       // Update conversation history
-      const aiContent: Content = {
-        role: "model",
-        parts: [{ text: fullResponse }]
+      const aiContent: ChatMessage = {
+        role: "assistant",
+        content: fullResponse,
       }
 
       setConversationHistory((prev) => [...prev, userContent, aiContent])
@@ -213,9 +213,9 @@ export function ProjectAIDialog({ project, children }: ProjectAIDialogProps) {
 
     try {
       // Add user message to conversation history
-      const userContent: Content = {
+      const userContent: ChatMessage = {
         role: "user",
-        parts: [{ text: question }]
+        content: question,
       }
 
       // Get AI response stream
@@ -258,9 +258,9 @@ export function ProjectAIDialog({ project, children }: ProjectAIDialogProps) {
       }
 
       // Update conversation history
-      const aiContent: Content = {
-        role: "model",
-        parts: [{ text: fullResponse }]
+      const aiContent: ChatMessage = {
+        role: "assistant",
+        content: fullResponse,
       }
 
       setConversationHistory((prev) => [...prev, userContent, aiContent])

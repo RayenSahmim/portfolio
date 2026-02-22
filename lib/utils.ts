@@ -1,46 +1,71 @@
-import { Content, GenerationConfig, GoogleGenerativeAI } from "@google/generative-ai"
+import { HfInference } from "@huggingface/inference"
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+
+export interface ChatMessage {
+  role: "user" | "assistant" | "system";
+  content: string;
+}
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export const GenerateResponseStream = async ({prompt ,SystemPrompt , history, apikey, generationConfig } : {prompt: string, SystemPrompt: string, history: Content[], apikey: string, generationConfig: GenerationConfig}) => {
-    try {
-      const genAI = new GoogleGenerativeAI(apikey);
-      const model = genAI.getGenerativeModel({ 
-        model: "gemini-2.0-flash-exp",
-        systemInstruction: SystemPrompt
-      });
-  
-      const chat = model.startChat({
-        generationConfig,
-        history,
-      });
-  
-      const result = await chat.sendMessageStream([prompt]);
-  
-      // Create a ReadableStream for streaming the response
-      const stream = new ReadableStream({
-        async start(controller) {
-          try {
-            for await (const chunk of result.stream) {
-              const chunkText = chunk.text();
-              // Encode text as Uint8Array for proper streaming
-              const encoder = new TextEncoder();
-              controller.enqueue(encoder.encode(chunkText));
+export const GenerateResponseStream = async ({
+  prompt,
+  SystemPrompt,
+  history,
+  apiToken,
+}: {
+  prompt: string;
+  SystemPrompt: string;
+  history: ChatMessage[];
+  apiToken: string;
+}) => {
+  try {
+    const hf = new HfInference(apiToken);
+
+    // Build the messages array: system prompt + history + current user message
+    const messages = [
+      { role: "system" as const, content: SystemPrompt },
+      ...history.map((msg) => ({
+        role: msg.role as "user" | "assistant",
+        content: msg.content,
+      })),
+      { role: "user" as const, content: prompt },
+    ];
+
+    // Create a ReadableStream for streaming the response
+    const stream = new ReadableStream({
+      async start(controller) {
+        try {
+          const encoder = new TextEncoder();
+
+          const response = hf.chatCompletionStream({
+            model: "meta-llama/Llama-3.2-3B-Instruct",
+            messages,
+            max_tokens: 512,
+            temperature: 0.7,
+            top_p: 0.95,
+          });
+
+          for await (const chunk of response) {
+            const content = chunk.choices?.[0]?.delta?.content;
+            if (content) {
+              controller.enqueue(encoder.encode(content));
             }
-            controller.close(); // Close the stream when finished
-          } catch (error) {
-            controller.error(error); // Handle errors in the stream
           }
-        },
-      });
-  
-      return stream; // Return the stream to the caller
-    } catch (error) {
-      console.error(error);
-      throw new Error("Failed to fetch AI response.");
-    }
+
+          controller.close();
+        } catch (error) {
+          controller.error(error);
+        }
+      },
+    });
+
+    return stream;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to fetch AI response.");
+  }
 }

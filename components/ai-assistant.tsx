@@ -11,7 +11,7 @@ import { ChatInput } from "@/components/ui/chat-input"
 import { QuickQuestions } from "@/components/ui/quick-questions"
 import aiData from "@/data/ai-responses.json"
 import { sendAIResponse } from "@/app/actions/Ai.action"
-import type { Content } from "@google/generative-ai"
+import type { ChatMessage } from "@/lib/utils"
 
 interface Message {
   id: number
@@ -31,7 +31,7 @@ export function AIAssistant() {
   ])
   const [inputValue, setInputValue] = useState("")
   const [isTyping, setIsTyping] = useState(false)
-  const [conversationHistory, setConversationHistory] = useState<Content[]>([])
+  const [conversationHistory, setConversationHistory] = useState<ChatMessage[]>([])
   const chatContainerRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
@@ -68,9 +68,9 @@ export function AIAssistant() {
 
     try {
       // Add user message to conversation history
-      const userContent: Content = {
+      const userContent: ChatMessage = {
         role: "user",
-        parts: [{ text: currentInput }]
+        content: currentInput,
       }
 
       // Get AI response stream
@@ -113,9 +113,9 @@ export function AIAssistant() {
       }
 
       // Update conversation history
-      const aiContent: Content = {
-        role: "model",
-        parts: [{ text: fullResponse }]
+      const aiContent: ChatMessage = {
+        role: "assistant",
+        content: fullResponse,
       }
 
       setConversationHistory((prev) => [...prev, userContent, aiContent])
@@ -158,9 +158,9 @@ export function AIAssistant() {
 
     try {
       // Add user message to conversation history
-      const userContent: Content = {
+      const userContent: ChatMessage = {
         role: "user",
-        parts: [{ text: question }]
+        content: question,
       }
 
       // Get AI response stream
@@ -203,9 +203,9 @@ export function AIAssistant() {
       }
 
       // Update conversation history
-      const aiContent: Content = {
-        role: "model",
-        parts: [{ text: fullResponse }]
+      const aiContent: ChatMessage = {
+        role: "assistant",
+        content: fullResponse,
       }
 
       setConversationHistory((prev) => [...prev, userContent, aiContent])

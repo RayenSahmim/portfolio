@@ -5,8 +5,8 @@ import { Projects } from "@/components/projects";
 import { Certificates } from "@/components/certificates";
 import { AIAssistant } from "@/components/ai-assistant";
 import { Contact } from "@/components/contact";
-import { SpaceExplorer } from "@/components/space-explorer";
 import { BackgroundEffects } from "@/components/background-effects";
+import { ModeSelector } from "@/components/mode-selector";
 
 export default function Portfolio() {
   return (
@@ -20,8 +20,9 @@ export default function Portfolio() {
         <Certificates />
         <AIAssistant />
         <Contact />
-        <SpaceExplorer />
       </main>
+      {/* 2D / 3D choice dialog — shows on first load */}
+      <ModeSelector />
     </div>
   );
 }

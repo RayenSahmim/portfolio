@@ -61,6 +61,51 @@
       "duration": "2 hours",
       "rating": "DataCamp Verified",
       "completedBy": "Rayen Sahmim"
+    },
+    {
+      "id": 4,
+      "title": "AWS Cloud Technical Essentials",
+      "issuer": "Amazon Web Services (via Coursera)",
+      "date": "February 16, 2026",
+      "description": "Comprehensive course covering AWS core services, security, IAM, compute (EC2, Lambda, ECS), storage (S3), and databases (RDS, DynamoDB). Completed with a grade of 98.30%.",
+      "skills": [
+        "AWS Identity and Access Management (IAM)",
+        "Amazon S3",
+        "Cloud Computing",
+        "Cloud Computing Architecture",
+        "Virtual Networking",
+        "Serverless Computing",
+        "Containerization",
+        "Cloud Infrastructure",
+        "Cloud Security",
+        "Scalability"
+      ],
+      "credentialId": "AVZEG2IGKW0K",
+      "verificationUrl": "https://www.coursera.org/account/accomplishments/verify/AVZEG2IGKW0K",
+      "image": "/certificates/aws-cloud-essentials.jpg",
+      "duration": "20 hours",
+      "rating": "4.8/5 (6,263 ratings)",
+      "completedBy": "Rayen Sahmim"
+    },
+    {
+      "id": 5,
+      "title": "AWS Academy Machine Learning Foundations",
+      "issuer": "Amazon Web Services Training and Certification",
+      "date": "February 2026",
+      "description": "Completed the AWS Academy Machine Learning Foundations course, covering core ML concepts, AWS AI/ML services, and cloud-based machine learning workflows. Awarded an official AWS Academy badge by AWS Training and Certification.",
+      "skills": [
+        "Machine Learning",
+        "Machine Learning (ML) Foundations",
+        "Artificial Intelligence",
+        "AWS",
+        "AWS Cloud Computing"
+      ],
+      "credentialId": "489fdf6d-1a5e-4ebb-9920-75bce317bc33",
+      "verificationUrl": "https://www.credly.com/badges/489fdf6d-1a5e-4ebb-9920-75bce317bc33",
+      "image": "/certificates/aws-ml-foundations.jpg",
+      "duration": "N/A",
+      "rating": "AWS Academy Verified",
+      "completedBy": "Rayen Sahmim"
     }
   ]
 }

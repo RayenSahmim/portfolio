@@ -1,648 +1,70 @@
-"use client";
+"use client"
 
-import type React from "react";
+import type React from "react"
+import { useEffect, useState, useRef } from "react"
+import { Canvas } from "@react-three/fiber"
+import { KeyboardControls, Environment, Stars } from "@react-three/drei"
+import * as THREE from "three"
+import { usePlayers } from "@/hooks/use-players"
+import { MultiplayerPlayers } from "./multiplayer-players"
+import { SpaceBackgroundEffects } from "./spaceship/SpaceBackgroundEffects"
+import { Spaceship } from "./spaceship/Spaceship"
+import { FollowCamera } from "./spaceship/FollowCamera"
+import { JoystickControls } from "./spaceship/JoystickControls"
+import { Instructions } from "./spaceship/Instructions"
+import { DebugInfo } from "./spaceship/DebugInfo"
+import { Portfolio3DGallery } from "./spaceship/Portfolio3DGallery"
+import { ProjectDetailModal } from "./spaceship/ProjectDetailModal"
+import { SpaceSettings } from "./spaceship/SpaceSettings"
 
-import { useMemo, useRef, useState, useEffect } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import {
-  useGLTF,
-  KeyboardControls,
-  useKeyboardControls,
-  Environment,
-  Stars,
-} from "@react-three/drei";
-import * as THREE from "three";
-import { Joystick } from "react-joystick-component";
-import { usePlayers } from "@/hooks/use-players";
-import { MultiplayerPlayers } from "./multiplayer-players";
-
-/* --------------------------- PORTFOLIO BACKGROUND EFFECTS --------------------------- */
 // Generate deterministic star positions based on index
-const generateStarData = (index: number) => {
-  // Use index as seed for deterministic "random" values
-  const seed = index * 1234.5678;
-  const random1 = (Math.sin(seed) + 1) / 2;
-  const random2 = (Math.sin(seed * 2) + 1) / 2;
-  const random3 = (Math.sin(seed * 3) + 1) / 2;
-  const random4 = (Math.sin(seed * 4) + 1) / 2;
-  const random5 = (Math.sin(seed * 5) + 1) / 2;
-  const random6 = (Math.sin(seed * 6) + 1) / 2;
-
-  // Create clusters and avoid center area where content will be
-  let left, top;
-
-  if (index < 10) {
-    // Top area stars
-    left = random1 * 100;
-    top = random2 * 25; // Top 25% of screen
-  } else if (index < 20) {
-    // Side area stars (left and right edges)
-    if (random3 > 0.5) {
-      left = random1 * 20; // Left 20% of screen
-      top = 25 + random2 * 50; // Middle 50% vertically
-    } else {
-      left = 80 + random1 * 20; // Right 20% of screen
-      top = 25 + random2 * 50; // Middle 50% vertically
-    }
-  } else {
-    // Bottom area stars
-    left = random1 * 100;
-    top = 75 + random2 * 25; // Bottom 25% of screen
-  }
-
-  // Vary star sizes slightly
-  const size = random5 > 0.7 ? 2 : random5 > 0.4 ? 1.5 : 1;
-  const opacity = 0.2 + random6 * 0.4; // Opacity between 0.2 and 0.6
-
-  return {
-    left,
-    top,
-    size,
-    opacity,
-    animationDelay: random3 * 4, // Extended delay range
-    animationDuration: 2 + random4 * 4, // Extended duration range (2-6s)
-  };
-};
-
-function SpaceBackgroundEffects() {
-  const stars = useMemo(
-    () =>
-      [...Array(50)].map((_, i) => ({
-        id: i,
-        ...generateStarData(i),
-      })),
-    []
-  );
-
-  return (
-    <>
-      {/* Fixed Background matching portfolio exactly */}
-      <div className="fixed inset-0 bg-gray-900"></div>
-
-      {/* Animated Stars */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        {stars.map((star) => (
-          <div
-            key={star.id}
-            className="absolute rounded-full animate-pulse"
-            style={{
-              left: `${star.left}%`,
-              top: `${star.top}%`,
-              width: `${star.size * 4}px`,
-              height: `${star.size * 4}px`,
-              backgroundColor: `rgba(255, 255, 255, ${star.opacity})`,
-              animationDelay: `${star.animationDelay}s`,
-              animationDuration: `${star.animationDuration}s`,
-              boxShadow: `0 0 ${star.size * 4}px rgba(255, 255, 255, ${
-                star.opacity * 0.5
-              })`,
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Static Spotlights */}
-      <div
-        className="fixed top-20 left-20 w-96 h-96 rounded-full blur-3xl pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(99, 102, 241, 0.08) 50%, transparent 100%)",
-        }}
-      ></div>
-      <div
-        className="fixed bottom-20 right-20 w-80 h-80 rounded-full blur-3xl pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, rgba(99, 102, 241, 0.08) 50%, transparent 100%)",
-        }}
-      ></div>
-      <div
-        className="fixed top-1/2 left-1/2 w-64 h-64 rounded-full blur-2xl animate-pulse pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, rgba(99, 102, 241, 0.05) 50%, transparent 100%)",
-          transform: "translate(-50%, -50%)",
-        }}
-      ></div>
-    </>
-  );
-}
-
-/* --------------------------- SUPERSONIC TRAIL LINES --------------------------- */
-function TrailLine({
-  spaceshipRef,
-}: {
-  spaceshipRef: React.RefObject<THREE.Group | null>;
-}) {
-  const groupRef = useRef<THREE.Group>(null);
-  const forwardTime = useRef(0);
-
-  /* Create trail line material */
-  const trailMaterial = useMemo(
-    () =>
-      new THREE.LineBasicMaterial({
-        color: 0x00aaff,
-        transparent: true,
-        opacity: 0.7,
-        depthWrite: false,
-      }),
-    []
-  );
-
-  /* Create multiple trail line geometries */
-  const trailGeometries = useMemo(() => {
-    const geoms: THREE.BufferGeometry[] = [];
-    for (let i = 0; i < 80; i++) {
-      const geo = new THREE.BufferGeometry();
-      // Two points per line
-      geo.setAttribute(
-        "position",
-        new THREE.BufferAttribute(new Float32Array(6), 3)
-      );
-      geoms.push(geo);
-    }
-    return geoms;
-  }, []);
-
-  useFrame((_, dt) => {
-    if (!groupRef.current || !spaceshipRef.current) return;
-
-    const isMovingForward =
-      spaceshipRef.current.userData.isMovingForward ?? false;
-
-    if (isMovingForward) {
-      forwardTime.current += dt;
-    } else {
-      forwardTime.current = 0;
-    }
-
-    // Show supersonic trail lines after 2 seconds of forward movement
-    groupRef.current.visible = forwardTime.current >= 2;
-
-    if (!groupRef.current.visible) return;
-
-    // Animate the trail lines
-    trailGeometries.forEach((geo, i) => {
-      const pos = geo.attributes.position as THREE.BufferAttribute;
-      const arr = pos.array as Float32Array;
-
-      // Random positions around the camera view
-      const angle =
-        (i / trailGeometries.length) * Math.PI * 2 + _.clock.elapsedTime * 0.5;
-      const radius = 50 + Math.random() * 100;
-      const x = Math.cos(angle) * radius;
-      const y = (Math.random() - 0.5) * 100;
-      const z = Math.sin(angle) * radius;
-
-      // Create long lines that streak past
-      const lineLength = 5 + Math.random() * 8; // much shorter lines
-      const direction = new THREE.Vector3(
-        (Math.random() - 0.5) * 0.2,
-        (Math.random() - 0.5) * 0.2,
-        -1
-      ).normalize();
-
-      // Start point
-      arr[0] = x;
-      arr[1] = y;
-      arr[2] = z + 100;
-
-      // End point
-      arr[3] = x + direction.x * lineLength;
-      arr[4] = y + direction.y * lineLength;
-      arr[5] = z + direction.z * lineLength - 50; // reduced distance
-
-      pos.needsUpdate = true;
-    });
-
-    // Fade trail lines based on speed
-    const vel: THREE.Vector3 =
-      spaceshipRef.current.userData.velocity ?? new THREE.Vector3();
-    const speed = vel.length();
-    trailMaterial.opacity = Math.min(speed / 8, 0.8);
-  });
-
-  return (
-    <group ref={groupRef}>
-      {trailGeometries.map((geo, i) => (
-        <line key={i}>
-          <primitive object={geo} attach="geometry" />
-          <primitive object={trailMaterial} attach="material" />
-        </line>
-      ))}
-    </group>
-  );
-}
-
-/* ----------------------------- SPACESHIP MESH ----------------------------- */
-function Spaceship({
-  updatePlayerPosition,
-}: {
-  updatePlayerPosition?: (
-    position: THREE.Vector3,
-    rotation: THREE.Euler,
-    velocity: THREE.Vector3,
-    isMovingForward: boolean
-  ) => void;
-}) {
-  const { scene } = useGLTF("/models/spaceship.glb");
-  const shipRef = useRef<THREE.Group>(null);
-  const [, getKeys] = useKeyboardControls();
-
-  /* Engine-fire refs & helpers */
-  const fireRefs = useRef<THREE.Group[]>([]);
-  const flame = useRef(0);
-
-  /* Movement state */
-  const vel = useRef(new THREE.Vector3());
-  const rot = useRef(new THREE.Euler());
-
-  useFrame((_, dt) => {
-    if (!shipRef.current) return;
-    const { forward, backward, left, right, up, down } = getKeys();
-
-    // Get touch controls if available
-    const touchControls = (window as any).touchControls || {};
-
-    // Combine keyboard and touch controls
-    const isForward = forward || touchControls.forward;
-    const isBackward = backward || touchControls.backward;
-    const isLeft = left || touchControls.left;
-    const isRight = right || touchControls.right;
-    const isUp = up || touchControls.up;
-    const isDown = down || touchControls.down;
-
-    /* --- rotation --- */
-    const turnSpeed = 2;
-    if (isLeft) rot.current.y += turnSpeed * dt;
-    if (isRight) rot.current.y -= turnSpeed * dt;
-    if (isUp) rot.current.x += turnSpeed * dt;
-    if (isDown) rot.current.x -= turnSpeed * dt;
-
-    /* --- thrust --- */
-    const thrust = 12;
-    const dir = new THREE.Vector3(0, 0, -1).applyEuler(rot.current);
-
-    if (isForward) {
-      vel.current.addScaledVector(dir, thrust * dt);
-      flame.current = Math.min(flame.current + dt * 3, 1); // Even smoother buildup
-      // Track forward movement for trail
-      shipRef.current.userData.isMovingForward = true;
-    } else {
-      flame.current = Math.max(flame.current - dt * 1.5, 0); // Much slower fade
-      shipRef.current.userData.isMovingForward = false;
-    }
-
-    if (isBackward) vel.current.addScaledVector(dir, -thrust * dt * 0.5);
-
-    /* damping & update pos */
-    vel.current.multiplyScalar(0.98); // increased damping to slow down faster
-
-    /* limit maximum speed */
-    const maxSpeed = 2;
-    if (vel.current.length() > maxSpeed) {
-      vel.current.normalize().multiplyScalar(maxSpeed);
-    }
-
-    shipRef.current.position.add(vel.current);
-
-    /* expose velocity for camera / speed-lines */
-    shipRef.current.userData.velocity = vel.current.clone();
-
-    /* apply rotation & roll */
-    shipRef.current.rotation.copy(rot.current);
-    const bank = 0.3;
-    if (isLeft)
-      shipRef.current.rotation.z = THREE.MathUtils.clamp(
-        shipRef.current.rotation.z + bank * dt,
-        -bank,
-        bank
-      );
-    else if (isRight)
-      shipRef.current.rotation.z = THREE.MathUtils.clamp(
-        shipRef.current.rotation.z - bank * dt,
-        -bank,
-        bank
-      );
-    else shipRef.current.rotation.z *= 0.95;
-
-    /* animate flames */
-    fireRefs.current.forEach((f, i) => {
-      if (!f) return;
-
-      // Clean on/off behavior - no flickering when stopped
-      if (flame.current < 0.15) {
-        // Completely hide flames when not thrusting
-        f.visible = false;
-        f.scale.setScalar(0);
-      } else {
-        // Show flames with gentle animation when thrusting
-        f.visible = true;
-        const oscillation = Math.sin(_.clock.elapsedTime * 4 + i * 0.8) * 0.1;
-        const scale = flame.current * (0.9 + oscillation);
-        f.scale.setScalar(scale);
-      }
-    });
-
-    // Send position updates to multiplayer system
-    if (updatePlayerPosition) {
-      updatePlayerPosition(
-        shipRef.current.position.clone(),
-        shipRef.current.rotation.clone(),
-        vel.current.clone(),
-        shipRef.current.userData.isMovingForward
-      );
-    }
-  });
-
-  return (
-    <>
-      <group ref={shipRef} name="spaceship">
-        <primitive object={scene} scale={0.5} />
-        {/* 4 flames positioned to match the blue engine dots */}
-        {[...Array(4)].map((_, i) => (
-          <group
-            key={i}
-            ref={(el) => (fireRefs.current[i] = el!)}
-            position={[-0.6 + i * 0.3, 0.5, 2.2]}
-          >
-            <mesh rotation={[Math.PI / 2, 0, 0]}>
-              <coneGeometry args={[0.3, 2, 8]} />
-              <meshBasicMaterial color="#0088ff" transparent opacity={0.7} />
-            </mesh>
-            <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.25]}>
-              <coneGeometry args={[0.15, 1.5, 6]} />
-              <meshBasicMaterial color="#00aaff" transparent opacity={0.8} />
-            </mesh>
-            <pointLight color="#0099ff" intensity={0.8} distance={8} />
-          </group>
-        ))}
-        {/* trail line after 2 seconds of forward movement */}
-        <TrailLine spaceshipRef={shipRef} />
-      </group>
-      {/* speed streaks */}
-    </>
-  );
-}
-
-/* ------------------------------ FOLLOW CAMERA ----------------------------- */
-function FollowCamera() {
-  const { camera, scene } = useThree();
-  const shipRef = useRef<THREE.Object3D | null>(null);
-
-  useFrame(() => {
-    /* discover the ship once */
-    if (!shipRef.current) {
-      shipRef.current = scene.getObjectByName("spaceship") ?? null;
-      if (!shipRef.current) return;
-    }
-
-    /* completely fixed offset – no speed influence at all */
-    const offset = new THREE.Vector3(0, 1.5, 3);
-    offset.applyQuaternion(shipRef.current.quaternion);
-    const targetPos = shipRef.current.position.clone().add(offset);
-
-    camera.position.lerp(targetPos, 0.1);
-
-    /* look directly at the spaceship */
-    camera.lookAt(shipRef.current.position);
-  });
-
-  return null;
-}
-
-/* --------------------------- JOYSTICK CONTROLS --------------------------- */
-function JoystickControls({ onExit }: { onExit?: () => void }) {
-  const [joystickState, setJoystickState] = useState({
-    forward: false,
-    backward: false,
-    left: false,
-    right: false,
-    up: false,
-    down: false,
-  });
-
-  const handleMainJoystickMove = (event: any) => {
-    if (!event) return;
-
-    const { x, y, distance } = event;
-    const threshold = 10; // Use distance threshold instead of normalized distance
-
-    if (distance && distance > threshold) {
-      // Reset all directions first
-      const newState = {
-        forward: false,
-        backward: false,
-        left: false,
-        right: false,
-        up: false,
-        down: false,
-      };
-
-      // Map joystick direction to spaceship controls using x/y coordinates
-      if (x !== undefined && y !== undefined) {
-        // Forward/Backward based on Y axis
-        if (y > 0.3) {
-          // Up on joystick = forward
-          newState.forward = true;
-        } else if (y < -0.3) {
-          // Down on joystick = backward
-          newState.backward = true;
-        }
-
-        // Left/Right based on X axis
-        if (x < -0.3) {
-          // Left on joystick = left
-          newState.left = true;
-        } else if (x > 0.3) {
-          // Right on joystick = right
-          newState.right = true;
-        }
-      }
-
-      setJoystickState(newState);
-    } else {
-      // Reset all when joystick is in center
-      setJoystickState({
-        forward: false,
-        backward: false,
-        left: false,
-        right: false,
-        up: false,
-        down: false,
-      });
-    }
-  };
-
-  const handleMainJoystickStop = () => {
-    setJoystickState({
-      forward: false,
-      backward: false,
-      left: false,
-      right: false,
-      up: false,
-      down: false,
-    });
-  };
-
-  const handleVerticalJoystickMove = (event: any) => {
-    if (!event) return;
-
-    const { x, y, distance } = event;
-    const threshold = 10;
-
-    if (distance && distance > threshold) {
-
-      setJoystickState((prev) => ({
-        ...prev,
-        up: y && y > 0.3, // Up on joystick = up movement
-        down: y && y < -0.3, // Down on joystick = down movement
-      }));
-    } else {
-      setJoystickState((prev) => ({
-        ...prev,
-        up: false,
-        down: false,
-      }));
-    }
-  };
-
-  const handleVerticalJoystickStop = () => {
-    setJoystickState((prev) => ({
-      ...prev,
-      up: false,
-      down: false,
-    }));
-  };
-
-  // Expose joystick state globally for spaceship controls
-  useEffect(() => {
-    (window as any).touchControls = joystickState;
-  }, [joystickState]);
-
-  return (
-    <div className="absolute inset-0 pointer-events-none">
-      {/* Main Movement Joystick - Left Side */}
-      <div className="absolute left-4 bottom-20 pointer-events-auto md:hidden">
-        <div className="relative">
-          <Joystick
-            size={120}
-            sticky={false}
-            baseColor="rgba(17, 24, 39, 0.7)"
-            stickColor="rgba(99, 102, 241, 0.9)"
-            move={handleMainJoystickMove}
-            stop={handleMainJoystickStop}
-          />
-          <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center pointer-events-none">
-            <div className="text-white text-xs font-bold bg-gray-900/70 backdrop-blur-sm px-2 py-1 rounded border border-indigo-500/30">
-              Move
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Vertical Controls Joystick - Right Side */}
-      <div className="absolute right-4 bottom-20 pointer-events-auto md:hidden">
-        <div className="relative">
-          <Joystick
-            size={100}
-            sticky={false}
-            baseColor="rgba(17, 24, 39, 0.7)"
-            stickColor="rgba(139, 92, 246, 0.9)"
-            move={handleVerticalJoystickMove}
-            stop={handleVerticalJoystickStop}
-          />
-          <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center pointer-events-none">
-            <div className="text-white text-xs font-bold bg-gray-900/70 backdrop-blur-sm px-2 py-1 rounded border border-purple-500/30">
-              Up/Down
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Exit Button for Mobile */}
-      {onExit && (
-        <button
-          onClick={onExit}
-          className="absolute top-4 right-4 pointer-events-auto md:hidden w-12 h-12 rounded-full bg-red-500/70 border-2 border-red-400 backdrop-blur-sm flex items-center justify-center text-white font-bold"
-        >
-          ✕
-        </button>
-      )}
-    </div>
-  );
-}
-
-/* --------------------------- HUD / INSTRUCTIONS --------------------------- */
-function Instructions({
-  onExit,
-  playerCount,
-}: {
-  onExit?: () => void;
-  playerCount?: number;
-}) {
-  return (
-    <>
-      <div className="hidden md:block absolute top-20 left-4 bg-black/70 text-white p-4 rounded font-mono text-sm">
-        <h3 className="font-bold mb-2">🚀 SPACE EXPLORER</h3>
-        <p className="hidden md:block">↑ ↓ ← → or W A S D – fly</p>
-        <p className="md:hidden">Use joystick controls to fly</p>
-        <p className="text-orange-400">Thrust shows engine flames</p>
-        <p className="text-cyan-400">Speed lines appear when going fast</p>
-        {playerCount !== undefined && (
-          <p className="text-green-400 mt-2">
-            👥 Players online: {playerCount + 1} {/* +1 for current player */}
-          </p>
-        )}
-        {onExit && (
-          <p className="text-red-400 mt-2 hidden md:block">
-            ESC – return to portfolio
-          </p>
-        )}
-      </div>
-
-      {onExit && (
-        <div className="absolute bottom-4 left-4 bg-black/70 text-white p-3 rounded font-mono text-sm">
-          <p className="text-yellow-400">🚀 Space Explorer Mode</p>
-          <p className="text-gray-300 text-xs mt-1">
-            Enjoying the ride? Press ESC when ready to return
-          </p>
-          {playerCount !== undefined && playerCount > 0 && (
-            <p className="text-green-300 text-xs mt-1">
-              You're flying with {playerCount} other explorer
-              {playerCount === 1 ? "" : "s"}!
-            </p>
-          )}
-        </div>
-      )}
-    </>
-  );
-}
 
 /* --------------------------------- PAGE ---------------------------------- */
 interface PlayerData {
-  username: string;
-  color: string;
+  username: string
+  color: string
 }
 
 export default function SpaceshipGame({
   onExit,
   playerData,
+  onPlayerUpdate,
 }: {
-  onExit?: () => void;
-  playerData?: PlayerData | null;
+  onExit?: () => void
+  playerData?: PlayerData | null
+  onPlayerUpdate?: (username: string, color: string) => void
 }) {
-  const { playersMap, updatePlayerPosition, connected, setIsInSpaceExplorer } =
-    usePlayers();
+  const { playersMap, updatePlayerPosition, connected, setIsInSpaceExplorer } = usePlayers()
+  const [selectedProject, setSelectedProject] = useState<any>(null)
+  const spaceshipRef = useRef<THREE.Group>(null)
 
   // Set the space explorer state when the component mounts
   useEffect(() => {
-    setIsInSpaceExplorer(true);
+    setIsInSpaceExplorer(true)
     return () => {
-      setIsInSpaceExplorer(false);
-    };
-  }, []);
+      setIsInSpaceExplorer(false)
+    }
+  }, [])
 
+  // Handle escape key to close project modal
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (selectedProject) {
+          setSelectedProject(null)
+        } else if (onExit) {
+          onExit()
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleEscape)
+    return () => window.removeEventListener('keydown', handleEscape)
+  }, [selectedProject, onExit])
+
+  const handleProjectSelect = (project: any) => {
+    setSelectedProject(project)
+  }
 
   return (
     <div className="h-screen w-full relative">
@@ -650,24 +72,16 @@ export default function SpaceshipGame({
       <SpaceBackgroundEffects />
 
       {/* Debug info */}
-      <div className="absolute top-20 right-4 bg-black/70 text-white p-2 rounded font-mono text-xs">
-        <p>Connection: {connected ? "🟢 Connected" : "🔴 Disconnected"}</p>
-        <p>Other Players: {playersMap.size}</p>
-        {Array.from(playersMap.values()).map((player) => (
-          <p key={player.id} className="text-cyan-400">
-            Player: {playerData?.username}
-          </p>
-        ))}
-      </div>
+      <DebugInfo connected={connected} playersMap={playersMap} playerData={playerData} />
 
       <KeyboardControls
         map={[
-          { name: "forward", keys: ["ArrowUp", "w", "W"] },
+          { name: "forward", keys: ["ArrowUp", "q", "Q"] },
           { name: "backward", keys: ["ArrowDown", "s", "S"] },
-          { name: "left", keys: ["ArrowLeft", "a", "A"] },
-          { name: "right", keys: ["ArrowRight", "d", "D"] },
-          { name: "up", keys: ["q", "Q"] },
-          { name: "down", keys: ["e", "E"] },
+          { name: "left", keys: [] }, // Disabled
+          { name: "right", keys: [] }, // Disabled
+          { name: "up", keys: [] }, // Disabled
+          { name: "down", keys: [] }, // Disabled
         ]}
       >
         <Canvas camera={{ position: [0, 2, 4], fov: 75 }} shadows>
@@ -680,10 +94,13 @@ export default function SpaceshipGame({
           <Environment preset="night" />
 
           {/* main actor */}
-          <Spaceship updatePlayerPosition={updatePlayerPosition} />
+          <Spaceship updatePlayerPosition={updatePlayerPosition} shipRef={spaceshipRef} />
 
           {/* other players */}
           <MultiplayerPlayers playersMap={playersMap} />
+
+          {/* 3D Portfolio Gallery - Complete Journey */}
+          <Portfolio3DGallery onProjectSelect={handleProjectSelect} spaceshipRef={spaceshipRef} />
 
           {/* auto-follow cam */}
           <FollowCamera />
@@ -695,6 +112,18 @@ export default function SpaceshipGame({
 
       <Instructions onExit={onExit} playerCount={playersMap.size} />
       <JoystickControls onExit={onExit} />
+
+      {/* In-game settings panel (change name / color) */}
+      <SpaceSettings
+        playerData={playerData ?? null}
+        onUpdate={(username, color) => onPlayerUpdate?.(username, color)}
+      />
+
+      {/* Project Detail Modal */}
+      <ProjectDetailModal 
+        project={selectedProject} 
+        onClose={() => setSelectedProject(null)} 
+      />
     </div>
-  );
+  )
 }
