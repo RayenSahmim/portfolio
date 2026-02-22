@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { FileText, Rocket } from "lucide-react"
 import { useSpaceExplorer } from "@/contexts/space-explorer-context"
 import { useSocket } from "@/contexts/socket-context"
 import SpaceshipGame from "./spaceship"
@@ -105,7 +106,9 @@ export function ModeSelector() {
                 onClick={handleChoose2D}
                 className="group relative rounded-2xl border border-gray-700/60 bg-gray-900/80 backdrop-blur-sm p-6 text-left transition-all duration-300 hover:border-indigo-500/60 hover:shadow-[0_0_30px_rgba(99,102,241,0.15)] hover:scale-[1.03] active:scale-[0.98]"
               >
-                <div className="text-4xl mb-4">📄</div>
+                <div className="mb-4 p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 inline-flex">
+                  <FileText className="w-8 h-8 text-indigo-400" />
+                </div>
                 <h3 className="text-xl font-semibold text-white mb-2">
                   2D Portfolio
                 </h3>
@@ -123,7 +126,9 @@ export function ModeSelector() {
                 onClick={handleChoose3D}
                 className="group relative rounded-2xl border border-gray-700/60 bg-gray-900/80 backdrop-blur-sm p-6 text-left transition-all duration-300 hover:border-cyan-500/60 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)] hover:scale-[1.03] active:scale-[0.98]"
               >
-                <div className="text-4xl mb-4">🚀</div>
+                <div className="mb-4 p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/20 inline-flex">
+                  <Rocket className="w-8 h-8 text-cyan-400" />
+                </div>
                 <h3 className="text-xl font-semibold text-white mb-2">
                   3D Space Explorer
                 </h3>
@@ -153,13 +158,6 @@ export function ModeSelector() {
             </svg>
             2D Mode
           </button>
-
-          {/* ESC hint */}
-          <div className="hidden md:block absolute top-6 left-1/2 -translate-x-1/2 z-[60] bg-black/50 text-white p-3 rounded-lg backdrop-blur-sm border border-gray-600/30">
-            <div className="text-sm">
-              Press <kbd className="bg-gray-700 px-2 py-1 rounded text-xs">ESC</kbd> to exit
-            </div>
-          </div>
 
           {/* Player info badge */}
           {playerData && (
