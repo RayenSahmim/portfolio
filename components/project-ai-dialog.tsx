@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { Bot, Sparkles } from "lucide-react"
+import { Bot, Sparkles, Trash2 } from "lucide-react"
 import { ChatMessages } from "@/components/ui/chat-messages"
 import { ChatInput } from "@/components/ui/chat-input"
 import { explainProject } from "@/app/actions/Ai.action"
@@ -38,12 +38,59 @@ interface ProjectAIDialogProps {
 }
 
 export function ProjectAIDialog({ project, children }: ProjectAIDialogProps) {
-  const [messages, setMessages] = useState<Message[]>([])
+  const storageKey = `project-ai-${project.title.replace(/\s+/g, "-").toLowerCase()}`
+
+  const [messages, setMessages] = useState<Message[]>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem(`${storageKey}-messages`)
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved)
+          return parsed.map((m: any) => ({ ...m, timestamp: new Date(m.timestamp) }))
+        } catch {}
+      }
+    }
+    return []
+  })
   const [inputValue, setInputValue] = useState("")
   const [isTyping, setIsTyping] = useState(false)
-  const [conversationHistory, setConversationHistory] = useState<ChatMessage[]>([])
+  const [conversationHistory, setConversationHistory] = useState<ChatMessage[]>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem(`${storageKey}-history`)
+      if (saved) {
+        try { return JSON.parse(saved) } catch {}
+      }
+    }
+    return []
+  })
   const [isOpen, setIsOpen] = useState(false)
   const chatContainerRef = useRef<HTMLDivElement>(null)
+
+  // Persist messages and history to localStorage
+  useEffect(() => {
+    if (messages.length > 0) {
+      localStorage.setItem(`${storageKey}-messages`, JSON.stringify(messages))
+    }
+  }, [messages, storageKey])
+
+  useEffect(() => {
+    if (conversationHistory.length > 0) {
+      localStorage.setItem(`${storageKey}-history`, JSON.stringify(conversationHistory))
+    }
+  }, [conversationHistory, storageKey])
+
+  const handleClearChat = () => {
+    const welcome: Message = {
+      id: 1,
+      text: `Hi! I'm here to help you learn more about the "${project.title}" project. You can ask me anything about the technologies used, the implementation details, challenges faced, or any other aspects of this project. What would you like to know?`,
+      isUser: false,
+      timestamp: new Date(),
+    }
+    setMessages([welcome])
+    setConversationHistory([])
+    localStorage.removeItem(`${storageKey}-messages`)
+    localStorage.removeItem(`${storageKey}-history`)
+  }
 
   // Component for truncated quick question buttons
   const QuickQuestionButton = ({ question, index }: { question: string; index: number }) => {
@@ -184,8 +231,7 @@ export function ProjectAIDialog({ project, children }: ProjectAIDialogProps) {
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open)
     if (!open) {
-      setMessages([])
-      setConversationHistory([])
+      // Don't clear — messages are persisted in localStorage
       setInputValue("")
       setIsTyping(false)
     }
@@ -288,10 +334,22 @@ export function ProjectAIDialog({ project, children }: ProjectAIDialogProps) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-md md:max-w-3xl w-full h-[600px] bg-gray-900 border-gray-800 overflow-hidden">
         <DialogHeader>
-          <DialogTitle className="text-white text-xl font-bold flex items-center gap-2 break-words">
-            <Bot className="h-6 w-6 text-indigo-400 flex-shrink-0" />
-            <span className="break-words">Ask AI about {project.title}</span>
-            <Sparkles className="h-5 w-5 text-purple-400 flex-shrink-0" />
+          <DialogTitle className="text-white text-xl font-bold flex items-center justify-between gap-2">
+            <span className="flex items-center gap-2 break-words min-w-0">
+              <Bot className="h-6 w-6 text-indigo-400 flex-shrink-0" />
+              <span className="break-words">Ask AI about {project.title}</span>
+              <Sparkles className="h-5 w-5 text-purple-400 flex-shrink-0" />
+            </span>
+            {messages.length > 1 && (
+              <button
+                onClick={handleClearChat}
+                className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-red-400 transition-colors font-normal flex-shrink-0"
+                title="Clear conversation"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                Clear
+              </button>
+            )}
           </DialogTitle>
         </DialogHeader>
         

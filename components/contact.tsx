@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Mail, MapPin, Phone, Send, MessageCircle } from "lucide-react"
 import { MetallicTitle } from "./metallic-title"
+import { NetworkSphere } from "./network-sphere"
 import personalData from "@/data/personal.json"
 import { toast } from "sonner"
 
@@ -97,13 +98,18 @@ export function Contact() {
         </div>
 
         <div className="grid md:grid-cols-2 gap-12">
-          <div className="space-y-8">
-            <div>
-              <h3 className="text-3xl font-bold mb-6 text-white readable-title">LET'S CONNECT</h3>
+          <div className="space-y-8 relative">
+            {/* Network sphere background effect */}
+            <div className="absolute -top-16 -left-20 w-[360px] h-[360px] pointer-events-none opacity-40 hidden md:block">
+              <NetworkSphere className="w-full h-full" />
+            </div>
+
+            <div className="relative z-10">
+              <h3 className="text-3xl font-bold mb-6 text-white readable-title">LET&apos;S CONNECT</h3>
               <p className="text-gray-300 mb-8 text-lg">{personalData.contact.connectMessage}</p>
             </div>
 
-            <div className="space-y-6">
+            <div className="space-y-6 relative z-10">
               <div className="flex items-center space-x-4 group">
                 <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform professional-icon">
                   <Mail className="h-6 w-6 text-white" />

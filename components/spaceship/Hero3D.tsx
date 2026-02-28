@@ -29,11 +29,11 @@ export function Hero3D({ position }: Hero3DProps) {
     const spaceship = scene.getObjectByName("spaceship")
     if (spaceship) {
       const dist = Math.abs(spaceship.position.z - position[2])
-      const target = THREE.MathUtils.clamp(1 - (dist - 6) / 28, 0.08, 1)
-      revealRef.current = THREE.MathUtils.lerp(revealRef.current, target, 0.04)
+      const target = THREE.MathUtils.clamp(1 - (dist - 8) / 35, 0.05, 1)
+      revealRef.current = THREE.MathUtils.lerp(revealRef.current, target, 0.06)
       groupRef.current.scale.setScalar(revealRef.current)
       // Only show Html overlays when spaceship is close enough
-      const nearby = dist < 20
+      const nearby = dist < 30
       if (nearby !== isNearby) setIsNearby(nearby)
     }
 
@@ -152,28 +152,7 @@ export function Hero3D({ position }: Hero3DProps) {
         </div>
       </Html>}
 
-      {/* Orbiting particles */}
-      {[...Array(24)].map((_, i) => {
-        const angle = (i / 24) * Math.PI * 2
-        const radius = 6 + (i % 3) * 0.8
-        return (
-          <mesh
-            key={i}
-            position={[
-              Math.cos(angle) * radius,
-              Math.sin(angle) * radius * 0.6,
-              0.2,
-            ]}
-          >
-            <sphereGeometry args={[0.03 + (i % 3) * 0.01]} />
-            <meshBasicMaterial
-              color={i % 2 === 0 ? 0xa78bfa : 0x6366f1}
-              transparent
-              opacity={0.5 + (i % 3) * 0.15}
-            />
-          </mesh>
-        )
-      })}
+
     </group>
   )
 }

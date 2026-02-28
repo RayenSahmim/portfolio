@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useMemo, useState } from "react"
+import { useRef, useState } from "react"
 import { useFrame, useThree } from "@react-three/fiber"
 import { Text, Html } from "@react-three/drei"
 import * as THREE from "three"
@@ -18,17 +18,6 @@ export function Skills3D({ position }: Skills3DProps) {
   const [isNearby, setIsNearby] = useState(false)
   const { scene } = useThree()
 
-  // Deterministic orbiting particles
-  const particles = useMemo(() =>
-    Array.from({ length: 20 }, (_, i) => {
-      const angle = (i / 20) * Math.PI * 2
-      const r = 8 + (i % 3) * 0.6
-      return {
-        pos: [Math.cos(angle) * r, Math.sin(angle) * r * 0.55, 0.2 + (i % 3) * 0.1] as [number, number, number],
-        color: [0x10b981, 0x059669, 0x34d399, 0x6ee7b7][i % 4],
-      }
-    }), []
-  )
 
   useFrame((state) => {
     if (!groupRef.current) return
@@ -39,10 +28,10 @@ export function Skills3D({ position }: Skills3DProps) {
     const spaceship = scene.getObjectByName("spaceship")
     if (spaceship) {
       const dist = Math.abs(spaceship.position.z - position[2])
-      const target = THREE.MathUtils.clamp(1 - (dist - 6) / 28, 0.08, 1)
-      revealRef.current = THREE.MathUtils.lerp(revealRef.current, target, 0.04)
+      const target = THREE.MathUtils.clamp(1 - (dist - 8) / 35, 0.05, 1)
+      revealRef.current = THREE.MathUtils.lerp(revealRef.current, target, 0.06)
       groupRef.current.scale.setScalar(revealRef.current)
-      const nearby = dist < 20
+      const nearby = dist < 30
       if (nearby !== isNearby) setIsNearby(nearby)
     }
 
@@ -75,19 +64,6 @@ export function Skills3D({ position }: Skills3DProps) {
         <planeGeometry args={[17.4, 13.4]} />
         <meshBasicMaterial color={0x10b981} transparent opacity={0.2} side={THREE.DoubleSide} />
       </mesh>
-
-      {/* Section Title */}
-      <Text
-        position={[0, 5.5, 0.1]}
-        fontSize={0.75}
-        color="#10b981"
-        anchorX="center"
-        anchorY="middle"
-        outlineWidth={0.02}
-        outlineColor="#064e3b"
-      >
-        TECHNICAL SKILLS
-      </Text>
 
       {/* Skills Grid — only visible when nearby */}
       {isNearby && <Html
@@ -134,13 +110,7 @@ export function Skills3D({ position }: Skills3DProps) {
         </div>
       </Html>}
 
-      {/* Orbiting particles */}
-      {particles.map((p, i) => (
-        <mesh key={i} position={p.pos}>
-          <sphereGeometry args={[0.04]} />
-          <meshBasicMaterial color={p.color} transparent opacity={0.5} />
-        </mesh>
-      ))}
+
     </group>
   )
 }

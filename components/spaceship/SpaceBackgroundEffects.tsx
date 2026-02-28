@@ -51,7 +51,7 @@ const generateStarData = (index: number) => {
 export function SpaceBackgroundEffects() {
   const stars = useMemo(
     () =>
-      [...Array(50)].map((_, i) => ({
+      [...Array(30)].map((_, i) => ({
         id: i,
         ...generateStarData(i),
       })),
@@ -88,21 +88,21 @@ export function SpaceBackgroundEffects() {
         className="fixed top-20 left-20 w-96 h-96 rounded-full blur-3xl pointer-events-none"
         style={{
           background:
-            "radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(99, 102, 241, 0.08) 50%, transparent 100%)",
+            "radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, rgba(99, 102, 241, 0.04) 50%, transparent 100%)",
         }}
       ></div>
       <div
         className="fixed bottom-20 right-20 w-80 h-80 rounded-full blur-3xl pointer-events-none"
         style={{
           background:
-            "radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, rgba(99, 102, 241, 0.08) 50%, transparent 100%)",
+            "radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, rgba(99, 102, 241, 0.04) 50%, transparent 100%)",
         }}
       ></div>
       <div
-        className="fixed top-1/2 left-1/2 w-64 h-64 rounded-full blur-2xl animate-pulse pointer-events-none"
+        className="fixed top-1/2 left-1/2 w-64 h-64 rounded-full blur-2xl pointer-events-none"
         style={{
           background:
-            "radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, rgba(99, 102, 241, 0.05) 50%, transparent 100%)",
+            "radial-gradient(circle, rgba(99, 102, 241, 0.05) 0%, rgba(99, 102, 241, 0.02) 50%, transparent 100%)",
           transform: "translate(-50%, -50%)",
         }}
       ></div>

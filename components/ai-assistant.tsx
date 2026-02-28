@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useState, useEffect, useRef } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Bot, Sparkles } from "lucide-react"
+import { Bot, Sparkles, Trash2 } from "lucide-react"
 import { MetallicTitle } from "./metallic-title"
 import { ChatMessages } from "@/components/ui/chat-messages"
 import { ChatInput } from "@/components/ui/chat-input"
@@ -21,18 +21,47 @@ interface Message {
 }
 
 export function AIAssistant() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 1,
-      text: aiData.initialMessage,
-      isUser: false,
-      timestamp: new Date(),
-    },
-  ])
+  const [messages, setMessages] = useState<Message[]>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("ai-assistant-messages")
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved)
+          return parsed.map((m: any) => ({ ...m, timestamp: new Date(m.timestamp) }))
+        } catch {}
+      }
+    }
+    return [{ id: 1, text: aiData.initialMessage, isUser: false, timestamp: new Date() }]
+  })
   const [inputValue, setInputValue] = useState("")
   const [isTyping, setIsTyping] = useState(false)
-  const [conversationHistory, setConversationHistory] = useState<ChatMessage[]>([])
+  const [conversationHistory, setConversationHistory] = useState<ChatMessage[]>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("ai-assistant-history")
+      if (saved) {
+        try { return JSON.parse(saved) } catch {}
+      }
+    }
+    return []
+  })
   const chatContainerRef = useRef<HTMLDivElement>(null)
+
+  // Persist messages and history to localStorage
+  useEffect(() => {
+    localStorage.setItem("ai-assistant-messages", JSON.stringify(messages))
+  }, [messages])
+
+  useEffect(() => {
+    localStorage.setItem("ai-assistant-history", JSON.stringify(conversationHistory))
+  }, [conversationHistory])
+
+  const handleClearChat = () => {
+    const initial = [{ id: 1, text: aiData.initialMessage, isUser: false, timestamp: new Date() }]
+    setMessages(initial)
+    setConversationHistory([])
+    localStorage.removeItem("ai-assistant-messages")
+    localStorage.removeItem("ai-assistant-history")
+  }
 
   const scrollToBottom = () => {
     // Scroll within the chat container, not the entire page
@@ -246,9 +275,21 @@ export function AIAssistant() {
 
         <Card className="professional-card-hover max-w-3xl mx-auto">
           <CardHeader className="pb-4 sm:pb-6">
-            <CardTitle className="text-white text-lg sm:text-xl lg:text-2xl professional-subtitle flex items-center">
-              <Bot className="h-5 w-5 sm:h-6 sm:w-6 mr-2 text-indigo-400" />
-              Chat with AI Assistant
+            <CardTitle className="text-white text-lg sm:text-xl lg:text-2xl professional-subtitle flex items-center justify-between">
+              <span className="flex items-center">
+                <Bot className="h-5 w-5 sm:h-6 sm:w-6 mr-2 text-indigo-400" />
+                Chat with AI Assistant
+              </span>
+              {messages.length > 1 && (
+                <button
+                  onClick={handleClearChat}
+                  className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-red-400 transition-colors font-normal"
+                  title="Clear conversation"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                  Clear
+                </button>
+              )}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 sm:space-y-6">

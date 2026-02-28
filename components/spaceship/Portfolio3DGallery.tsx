@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef, useMemo } from "react"
-import { useFrame } from "@react-three/fiber"
+import { useFrame, useThree } from "@react-three/fiber"
 import { Text } from "@react-three/drei"
 import * as THREE from "three"
 import { Hero3D } from "./Hero3D"
@@ -9,6 +9,7 @@ import { About3D } from "./About3D"
 import { Skills3D } from "./Skills3D"
 import { Project3DCard } from "./Project3DCard"
 import { Certificates3D } from "./Certificates3D"
+import { WormholePortal, SpaceDecor } from "./WormholePortal"
 import projectsData from "@/data/projects.json"
 
 interface Portfolio3DGalleryProps {
@@ -16,44 +17,133 @@ interface Portfolio3DGalleryProps {
   spaceshipRef?: React.RefObject<THREE.Group | null>
 }
 
-// Section definitions with colors
+// ---- SECTION LAYOUT ----
+// Generous spacing so you truly explore the void between each zone.
 const SECTIONS = [
-  { name: "Hero", z: 80, color: 0x6366f1 },
-  { name: "About", z: 55, color: 0x06b6d4 },
-  { name: "Skills", z: 30, color: 0x10b981 },
-  { name: "Projects", z: 5, color: 0xf59e0b },
-  { name: "Certificates", z: -60, color: 0x8b5cf6 },
+  { name: "Hero",         z: 160, color: 0x6366f1, accent: "#818cf8" },
+  { name: "About",        z: 90,  color: 0x06b6d4, accent: "#22d3ee" },
+  { name: "Skills",       z: 20,  color: 0x10b981, accent: "#34d399" },
+  { name: "Projects",     z: -60, color: 0xf59e0b, accent: "#fbbf24" },
+  { name: "Certificates", z: -190, color: 0x8b5cf6, accent: "#a78bfa" },
 ] as const
+
+/* ---- FINISH LINE with proximity reveal ---- */
+function FinishLine({ position }: { position: [number, number, number] }) {
+  const groupRef = useRef<THREE.Group>(null)
+  const revealRef = useRef(0)
+  const { scene } = useThree()
+
+  // Banner dimensions: wide rectangle
+  const cols = 14
+  const rows = 4
+  const cellSize = 0.9
+  const bannerWidth = cols * cellSize
+  const bannerHeight = rows * cellSize
+  const poleHeight = bannerHeight + 3 // poles extend below and above banner
+  const bannerCenterY = 4 // vertical center of the banner
+
+  useFrame(() => {
+    if (!groupRef.current) return
+    const spaceship = scene.getObjectByName("spaceship")
+    if (spaceship) {
+      const dist = Math.abs(spaceship.position.z - position[2])
+      const target = THREE.MathUtils.clamp(1 - (dist - 8) / 35, 0, 1)
+      revealRef.current = THREE.MathUtils.lerp(revealRef.current, target, 0.06)
+      groupRef.current.scale.setScalar(revealRef.current)
+      groupRef.current.visible = revealRef.current > 0.02
+    }
+  })
+
+  const checkerBoxes = useMemo(() => {
+    const boxes: { pos: [number, number, number]; isWhite: boolean }[] = []
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        boxes.push({
+          pos: [
+            (c - (cols - 1) / 2) * cellSize,
+            (r - (rows - 1) / 2) * cellSize + bannerCenterY,
+            0,
+          ],
+          isWhite: (r + c) % 2 === 0,
+        })
+      }
+    }
+    return boxes
+  }, [])
+
+  const poleX = bannerWidth / 2 + 0.3
+
+  return (
+    <group ref={groupRef} position={position}>
+      {/* Left pole */}
+      <mesh position={[-poleX, bannerCenterY, 0]}>
+        <cylinderGeometry args={[0.12, 0.12, poleHeight, 8]} />
+        <meshStandardMaterial color="#888888" metalness={0.8} roughness={0.2} />
+      </mesh>
+      {/* Right pole */}
+      <mesh position={[poleX, bannerCenterY, 0]}>
+        <cylinderGeometry args={[0.12, 0.12, poleHeight, 8]} />
+        <meshStandardMaterial color="#888888" metalness={0.8} roughness={0.2} />
+      </mesh>
+
+      {/* Horizontal bar top */}
+      <mesh position={[0, bannerCenterY + bannerHeight / 2 + 0.15, 0]} rotation={[0, 0, Math.PI / 2]}>
+        <cylinderGeometry args={[0.08, 0.08, bannerWidth + poleX * 0.4, 8]} />
+        <meshStandardMaterial color="#999999" metalness={0.7} roughness={0.3} />
+      </mesh>
+      {/* Horizontal bar bottom */}
+      <mesh position={[0, bannerCenterY - bannerHeight / 2 - 0.15, 0]} rotation={[0, 0, Math.PI / 2]}>
+        <cylinderGeometry args={[0.08, 0.08, bannerWidth + poleX * 0.4, 8]} />
+        <meshStandardMaterial color="#999999" metalness={0.7} roughness={0.3} />
+      </mesh>
+
+      {/* Checkered banner */}
+      {checkerBoxes.map((box, i) => (
+        <mesh key={`checker-${i}`} position={box.pos}>
+          <boxGeometry args={[cellSize * 0.95, cellSize * 0.95, 0.08]} />
+          <meshStandardMaterial
+            color={box.isWhite ? "#ffffff" : "#111111"}
+            emissive={box.isWhite ? "#ffffff" : "#000000"}
+            emissiveIntensity={0.12}
+            roughness={0.3}
+            metalness={0.5}
+          />
+        </mesh>
+      ))}
+
+      {/* FINISH label */}
+      <Text
+        position={[0, bannerCenterY + bannerHeight / 2 + 1.2, 0]}
+        fontSize={1}
+        color="#ef4444"
+        anchorX="center"
+        anchorY="middle"
+        outlineWidth={0.03}
+        outlineColor="#7f1d1d"
+      >
+        FINISH
+      </Text>
+    </group>
+  )
+}
 
 export function Portfolio3DGallery({ onProjectSelect, spaceshipRef }: Portfolio3DGalleryProps) {
   const groupRef = useRef<THREE.Group>(null)
-  const ringRefs = useRef<THREE.Mesh[]>([])
 
-  // Project positions along the main path — alternating left/right but close to center
+  // Project positions — alternating left/right, starting at Projects section z and spaced 16 units
+  // Project positions — straight line along the path, centered
   const projectPositions = useMemo(() =>
     projectsData.projects.map((_, index) => {
-      const side = index % 2 === 0 ? -1 : 1
-      return [side * 4.5, 0, 5 - index * 12] as [number, number, number]
+      return [0, 0, -60 - index * 16] as [number, number, number]
     }), []
   )
-
-  useFrame((state) => {
-    // Animate ring gates — gentle rotation + pulse
-    ringRefs.current.forEach((ring, i) => {
-      if (!ring) return
-      ring.rotation.z = state.clock.elapsedTime * 0.15 + i * 0.5
-      const pulse = 0.3 + Math.sin(state.clock.elapsedTime * 1.2 + i) * 0.12
-      if (ring.material instanceof THREE.MeshBasicMaterial) {
-        ring.material.opacity = pulse
-      }
-    })
-  })
+  // Last project z = -60 - 5*16 = -140
 
   return (
     <group ref={groupRef}>
       {/* ===== WELCOME GATE ===== */}
       <Text
-        position={[0, 5, 100]}
+        position={[0, 5, 180]}
         fontSize={1.8}
         color="#6366f1"
         anchorX="center"
@@ -64,7 +154,7 @@ export function Portfolio3DGallery({ onProjectSelect, spaceshipRef }: Portfolio3
         PORTFOLIO JOURNEY
       </Text>
       <Text
-        position={[0, 2.8, 100]}
+        position={[0, 2.8, 180]}
         fontSize={0.5}
         color="#a5b4fc"
         anchorX="center"
@@ -75,47 +165,35 @@ export function Portfolio3DGallery({ onProjectSelect, spaceshipRef }: Portfolio3
         Fly forward to explore · Press Q/↑ to move · S/↓ to reverse
       </Text>
 
-      {/* Ring gate portals between sections */}
+      {/* ===== WORMHOLE PORTALS — replace old rings ===== */}
       {SECTIONS.map((section, i) => (
-        <mesh
-          key={`ring-${i}`}
-          ref={(el) => { if (el) ringRefs.current[i] = el }}
+        <WormholePortal
+          key={`portal-${i}`}
           position={[0, 0, section.z]}
-          rotation={[Math.PI / 2, 0, 0]}
-        >
-          <torusGeometry args={[9, 0.08, 16, 80]} />
-          <meshBasicMaterial color={section.color} transparent opacity={0.35} side={THREE.DoubleSide} />
-        </mesh>
+          color={section.color}
+          label={section.name.toUpperCase()}
+          accent={section.accent}
+        />
       ))}
 
-      {/* ===== SECTION CONTENT ===== */}
-      <Hero3D position={[0, 0, 80]} />
-      <About3D position={[0, 0, 55]} />
-      <Skills3D position={[0, 0, 30]} />
+      {/* ===== SPACE DECOR between sections ===== */}
+      {/* Between Welcome → Hero */}
+      <SpaceDecor startZ={180} endZ={165} seed={1} color={0x6366f1} />
+      {/* Between Hero → About */}
+      <SpaceDecor startZ={155} endZ={95} seed={2} color={0x4f46e5} />
+      {/* Between About → Skills */}
+      <SpaceDecor startZ={85} endZ={25} seed={3} color={0x0891b2} />
+      {/* Between Skills → Projects */}
+      <SpaceDecor startZ={15} endZ={-55} seed={4} color={0x059669} />
+      {/* Between last project → Certificates */}
+      <SpaceDecor startZ={-145} endZ={-185} seed={5} color={0x7c3aed} />
+      {/* After Certificates */}
+      <SpaceDecor startZ={-195} endZ={-220} seed={6} color={0x6d28d9} />
 
-      {/* Projects section title */}
-      <Text
-        position={[0, 6, 15]}
-        fontSize={1.2}
-        color="#f59e0b"
-        anchorX="center"
-        anchorY="middle"
-        outlineWidth={0.03}
-        outlineColor="#451a03"
-      >
-        PROJECTS
-      </Text>
-      <Text
-        position={[0, 4, 15]}
-        fontSize={0.4}
-        color="#fcd34d"
-        anchorX="center"
-        anchorY="middle"
-        maxWidth={16}
-        textAlign="center"
-      >
-        Fly through the corridor to discover each project
-      </Text>
+      {/* ===== SECTION CONTENT ===== */}
+      <Hero3D position={[0, 0, 160]} />
+      <About3D position={[0, 0, 90]} />
+      <Skills3D position={[0, 0, 20]} />
 
       {/* Project cards along the path — alternating left/right */}
       {projectsData.projects.map((project: any, index: number) => (
@@ -128,51 +206,25 @@ export function Portfolio3DGallery({ onProjectSelect, spaceshipRef }: Portfolio3
       ))}
 
       {/* Certificates Section */}
-      <Certificates3D position={[0, 0, -60]} />
+      <Certificates3D position={[0, 0, -190]} />
 
-      {/* ===== SECTION LANE MARKERS ===== */}
-      {SECTIONS.map((section, index) => (
-        <group key={`marker-${index}`}>
-          {/* Side beacon left */}
-          <mesh position={[-11, -2, section.z]}>
-            <cylinderGeometry args={[0.15, 0.15, 3, 8]} />
-            <meshBasicMaterial color={section.color} transparent opacity={0.5} />
-          </mesh>
-          <Text
-            position={[-11, 1.2, section.z]}
-            fontSize={0.4}
-            color="#ffffff"
-            anchorX="center"
-            anchorY="middle"
-            outlineWidth={0.02}
-            outlineColor="#000000"
-          >
-            {section.name.toUpperCase()}
-          </Text>
-          {/* Side beacon right */}
-          <mesh position={[11, -2, section.z]}>
-            <cylinderGeometry args={[0.15, 0.15, 3, 8]} />
-            <meshBasicMaterial color={section.color} transparent opacity={0.5} />
-          </mesh>
-        </group>
-      ))}
+
 
       {/* Journey start / end labels */}
-      <Text position={[0, 2.5, 108]} fontSize={0.65} color="#10b981" anchorX="center" anchorY="middle">
+      <Text position={[0, 2.5, 190]} fontSize={0.65} color="#10b981" anchorX="center" anchorY="middle">
         ▶ START
       </Text>
-      <Text position={[0, 2.5, -78]} fontSize={0.65} color="#ef4444" anchorX="center" anchorY="middle">
-        ■ END
-      </Text>
+      {/* Marathon checkered finish line with proximity reveal */}
+      <FinishLine position={[0, 0, -210]} />
 
-      {/* Section ambient lights */}
+      {/* Section ambient lights (in addition to portal point lights) */}
       {SECTIONS.map((section, index) => (
         <pointLight
           key={`light-${index}`}
-          position={[0, 3, section.z]}
+          position={[0, 5, section.z]}
           color={section.color}
-          intensity={0.5}
-          distance={20}
+          intensity={0.6}
+          distance={35}
         />
       ))}
     </group>

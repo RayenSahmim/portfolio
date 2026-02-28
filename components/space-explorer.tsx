@@ -168,18 +168,7 @@ export function SpaceExplorer() {
             </svg>
           </button>
 
-          {/* Player info */}
-          {playerData && (
-            <div className="absolute top-6 left-6 z-60 bg-black/50 text-white p-3 rounded-lg backdrop-blur-sm border border-gray-600/30 animate-slide-right">
-              <div className="flex items-center gap-2">
-                <div 
-                  className="w-4 h-4 rounded-full border border-gray-400"
-                  style={{ backgroundColor: playerData.color }}
-                />
-                <span className="text-sm font-medium">{playerData.username}</span>
-              </div>
-            </div>
-          )}
+          {/* Player info is shown inside SpaceSettings component */}
 
           {/* ESC hint */}
           <div className="hidden md:block absolute top-6 left-1/2 transform -translate-x-1/2 z-60 bg-black/50 text-white p-3 rounded-lg backdrop-blur-sm border border-gray-600/30 animate-slide-down">

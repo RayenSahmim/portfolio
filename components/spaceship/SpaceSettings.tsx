@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Settings, X } from "lucide-react"
+import { Pencil, X } from "lucide-react"
 
 const PRESET_COLORS = [
   "#4F46E5", "#7C3AED", "#EC4899", "#EF4444",
@@ -28,22 +28,33 @@ export function SpaceSettings({ playerData, onUpdate }: SpaceSettingsProps) {
 
   if (!open) {
     return (
-      <button
-        onClick={() => {
-          setUsername(playerData?.username ?? "")
-          setColor(playerData?.color ?? "#4F46E5")
-          setOpen(true)
-        }}
-        className="absolute bottom-4 left-4 z-[60] bg-gray-800/70 hover:bg-gray-700/80 text-white p-3 rounded-full backdrop-blur-sm border border-gray-600/40 transition-all duration-200 hover:scale-110"
-        title="Settings"
-      >
-        <Settings className="w-5 h-5" />
-      </button>
+      <div className="absolute top-6 left-6 z-[60] flex items-center gap-2 bg-black/50 backdrop-blur-sm text-white px-3 py-2.5 rounded-lg border border-gray-600/30">
+        {playerData && (
+          <>
+            <div
+              className="w-4 h-4 rounded-full border border-gray-400 shrink-0"
+              style={{ backgroundColor: playerData.color }}
+            />
+            <span className="text-sm font-medium">{playerData.username}</span>
+          </>
+        )}
+        <button
+          onClick={() => {
+            setUsername(playerData?.username ?? "")
+            setColor(playerData?.color ?? "#4F46E5")
+            setOpen(true)
+          }}
+          className="ml-1 text-gray-400 hover:text-white transition-colors p-1 rounded hover:bg-gray-700/60"
+          title="Edit profile"
+        >
+          <Pencil className="w-3.5 h-3.5" />
+        </button>
+      </div>
     )
   }
 
   return (
-    <div className="absolute bottom-4 left-4 z-[60] w-72 bg-gray-900/95 backdrop-blur-md rounded-xl border border-gray-700/60 p-4 shadow-2xl text-white">
+    <div className="absolute top-6 left-6 z-[60] w-72 bg-gray-900/95 backdrop-blur-md rounded-xl border border-gray-700/60 p-4 shadow-2xl text-white">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-semibold text-gray-200">Space Settings</h3>

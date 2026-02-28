@@ -30,30 +30,39 @@ export function Spaceship({ updatePlayerPosition, shipRef: externalShipRef }: Sp
   useEffect(() => {
     if (shipRef.current) {
       // Start at the beginning of the portfolio journey
-      shipRef.current.position.set(0, 0, 100) // Start at portfolio beginning
+      shipRef.current.position.set(0, 0, 195) // Start at portfolio beginning
     }
   }, [])
 
   useFrame((_, dt) => {
     if (!shipRef.current) return
 
+    // Check for reset signal (from completion retry)
+    if ((window as any).__spaceshipReset) {
+      ;(window as any).__spaceshipReset = false
+      shipRef.current.position.set(0, 0, 195)
+      vel.current.set(0, 0, 0)
+      flame.current = 0
+      return
+    }
+
     const { forward, backward, left, right, up, down } = getKeys()
     const touchControls = (window as any).touchControls || {}
 
     // Define path boundaries for the complete portfolio journey
-    const START_BOUNDARY = 110
-    const END_BOUNDARY = -85  // Stop at end of portfolio journey
+    const START_BOUNDARY = 195
+    const END_BOUNDARY = -220  // Stop at end of portfolio journey
 
     const isForward = forward || touchControls.forward
     const isBackward = backward || touchControls.backward
 
     // Smooth movement along Z-axis
     if (isForward && shipRef.current.position.z > END_BOUNDARY) {
-      vel.current.z -= 6 * dt
+      vel.current.z -= 2.5 * dt
       flame.current = Math.min(flame.current + dt * 2, 1)
       shipRef.current.userData.isMovingForward = true
     } else if (isBackward && shipRef.current.position.z < START_BOUNDARY) {
-      vel.current.z += 5 * dt
+      vel.current.z += 2 * dt
       flame.current = Math.max(flame.current - dt * 1.5, 0)
       shipRef.current.userData.isMovingForward = false
     } else {
@@ -93,10 +102,10 @@ export function Spaceship({ updatePlayerPosition, shipRef: externalShipRef }: Sp
     shipRef.current.position.y = 0
 
     // Smooth damping
-    vel.current.z *= 0.96
+    vel.current.z *= 0.94
 
     // Limit speed
-    const maxSpeed = 1.5
+    const maxSpeed = 0.6
     if (Math.abs(vel.current.z) > maxSpeed) {
       vel.current.z = vel.current.z > 0 ? maxSpeed : -maxSpeed
     }
@@ -142,7 +151,7 @@ export function Spaceship({ updatePlayerPosition, shipRef: externalShipRef }: Sp
   return (
     <>
       <group ref={shipRef} name="spaceship">
-        <primitive object={scene} scale={0.5} />
+        <primitive object={scene} scale={0.3} />
         {[...Array(4)].map((_, i) => (
           <group key={i} ref={(el) => (fireRefs.current[i] = el!)} position={[-0.6 + i * 0.3, 0.5, 2.2]}>
             <mesh rotation={[Math.PI / 2, 0, 0]}>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useMemo, useState } from "react"
+import { useRef, useState } from "react"
 import { useFrame, useThree } from "@react-three/fiber"
 import { Text, Html } from "@react-three/drei"
 import * as THREE from "three"
@@ -18,14 +18,6 @@ export function About3D({ position }: About3DProps) {
   const [isNearby, setIsNearby] = useState(false)
   const { scene } = useThree()
 
-  // Deterministic particle positions
-  const particles = useMemo(() =>
-    Array.from({ length: 18 }, (_, i) => {
-      const angle = (i / 18) * Math.PI * 2
-      const r = 7 + (i % 4) * 0.5
-      return [Math.cos(angle) * r, Math.sin(angle) * r * 0.65, 0.2] as [number, number, number]
-    }), []
-  )
 
   useFrame((state) => {
     if (!groupRef.current) return
@@ -36,10 +28,10 @@ export function About3D({ position }: About3DProps) {
     const spaceship = scene.getObjectByName("spaceship")
     if (spaceship) {
       const dist = Math.abs(spaceship.position.z - position[2])
-      const target = THREE.MathUtils.clamp(1 - (dist - 6) / 28, 0.08, 1)
-      revealRef.current = THREE.MathUtils.lerp(revealRef.current, target, 0.04)
+      const target = THREE.MathUtils.clamp(1 - (dist - 8) / 35, 0.05, 1)
+      revealRef.current = THREE.MathUtils.lerp(revealRef.current, target, 0.06)
       groupRef.current.scale.setScalar(revealRef.current)
-      const nearby = dist < 20
+      const nearby = dist < 30
       if (nearby !== isNearby) setIsNearby(nearby)
     }
 
@@ -70,19 +62,6 @@ export function About3D({ position }: About3DProps) {
         <planeGeometry args={[15.4, 11.4]} />
         <meshBasicMaterial color={0x06b6d4} transparent opacity={0.2} side={THREE.DoubleSide} />
       </mesh>
-
-      {/* Section Title */}
-      <Text
-        position={[0, 4.5, 0.1]}
-        fontSize={0.75}
-        color="#06b6d4"
-        anchorX="center"
-        anchorY="middle"
-        outlineWidth={0.02}
-        outlineColor="#083344"
-      >
-        ABOUT ME
-      </Text>
 
       {/* Intro text */}
       <Text
@@ -159,17 +138,7 @@ export function About3D({ position }: About3DProps) {
         </div>
       </Html>}
 
-      {/* Orbiting particles */}
-      {particles.map((pos, i) => (
-        <mesh key={i} position={pos}>
-          <boxGeometry args={[0.04, 0.04, 0.04]} />
-          <meshBasicMaterial
-            color={i % 3 === 0 ? 0x06b6d4 : i % 3 === 1 ? 0x0891b2 : 0x22d3ee}
-            transparent
-            opacity={0.45}
-          />
-        </mesh>
-      ))}
+
     </group>
   )
 }

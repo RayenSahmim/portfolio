@@ -93,8 +93,8 @@ export function Project3DCard({ project, position, onInteract }: Project3DCardPr
     const spaceship = scene.getObjectByName("spaceship")
     if (spaceship) {
       const dist = Math.abs(spaceship.position.z - position[2])
-      const target = THREE.MathUtils.clamp(1 - (dist - 5) / 20, 0.05, 1)
-      revealRef.current = THREE.MathUtils.lerp(revealRef.current, target, 0.05)
+      const target = THREE.MathUtils.clamp(1 - (dist - 8) / 30, 0.05, 1)
+      revealRef.current = THREE.MathUtils.lerp(revealRef.current, target, 0.06)
       // Apply to the parent group via the mesh
       if (meshRef.current.parent) {
         meshRef.current.parent.scale.setScalar(revealRef.current)
@@ -170,33 +170,26 @@ export function Project3DCard({ project, position, onInteract }: Project3DCardPr
         onPointerOver={handlePointerOver}
         onPointerOut={handlePointerOut}
       >
-        <planeGeometry args={[4, 2.5]} />
+        <planeGeometry args={[6, 4]} />
         <primitive object={cardMaterial} attach="material" />
       </mesh>
 
       {/* Glow effect */}
       <mesh position={[0, 0, -0.01]} scale={[1.05, 1.05, 1.05]}>
-        <planeGeometry args={[4, 2.5]} />
+        <planeGeometry args={[6, 4]} />
         <primitive object={glowMaterial} attach="material" />
       </mesh>
 
-      {/* Featured star indicator */}
-      {project.featured && (
-        <mesh position={[1.5, 1, 0.1]}>
-          <sphereGeometry args={[0.1]} />
-          <meshBasicMaterial color={0xffd700} />
-        </mesh>
-      )}
 
       {/* 3D Text Title (visible from medium distance) — below the card */}
       {showTitle && (
         <Text
-          position={[0, -1.6, 0.1]}
-          fontSize={0.22}
+          position={[0, -2.5, 0.1]}
+          fontSize={0.3}
           color={project.featured ? "#8b5cf6" : "#06b6d4"}
           anchorX="center"
           anchorY="middle"
-          maxWidth={3.8}
+          maxWidth={5.5}
           outlineWidth={0.015}
           outlineColor="#000000"
         >
@@ -212,14 +205,14 @@ export function Project3DCard({ project, position, onInteract }: Project3DCardPr
           transform
           sprite
           style={{
-            width: "300px",
+            width: "360px",
             pointerEvents: "auto",
           }}
           onPointerEnter={handlePointerOver}
           onPointerLeave={handlePointerOut}
         >
-          <div className="bg-gray-900/95 backdrop-blur-sm border border-indigo-400/50 rounded-lg p-4 text-white text-sm">
-            <h3 className="font-bold text-indigo-400 mb-2">{project.title}</h3>
+          <div className="bg-gray-900/95 backdrop-blur-sm border border-indigo-400/50 rounded-lg p-4 text-white text-sm" style={{ width: '340px' }}>
+            <h3 className="font-bold text-indigo-400 mb-2 text-base">{project.title}</h3>
             <p className="text-gray-300 text-xs mb-3 line-clamp-3">{project.description}</p>
             
             {/* Technologies */}
@@ -280,8 +273,8 @@ export function Project3DCard({ project, position, onInteract }: Project3DCardPr
       {/* Distance indicator (for close projects) */}
       {distance < 10 && (
         <Text
-          position={[0, -1.5, 0.1]}
-          fontSize={0.15}
+          position={[0, -2.8, 0.1]}
+          fontSize={0.18}
           color="#10b981"
           anchorX="center"
           anchorY="middle"
@@ -290,28 +283,7 @@ export function Project3DCard({ project, position, onInteract }: Project3DCardPr
         </Text>
       )}
 
-      {/* Interaction particles when hovered */}
-      {hovered && (
-        <>
-          {[...Array(8)].map((_, i) => (
-            <mesh
-              key={i}
-              position={[
-                Math.cos((i / 8) * Math.PI * 2) * 2.5,
-                Math.sin((i / 8) * Math.PI * 2) * 1.5,
-                0.2,
-              ]}
-            >
-              <sphereGeometry args={[0.02]} />
-              <meshBasicMaterial
-                color={project.featured ? 0x8b5cf6 : 0x06b6d4}
-                transparent
-                opacity={0.8}
-              />
-            </mesh>
-          ))}
-        </>
-      )}
+
     </group>
   )
 }
